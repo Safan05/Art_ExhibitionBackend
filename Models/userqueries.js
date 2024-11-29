@@ -13,7 +13,7 @@ class UserModel {
   
     // Get a user by username 
     // todo: --> need to check for password during auth stage
-
+   
     async getUserByusername(Username) {
       try {
         const query = 'SELECT * FROM users WHERE username= $1';
@@ -86,7 +86,30 @@ class UserModel {
         console.error('Error creating user:', error);
         throw error;
       }
-    }
+    };
+
+    async  getUserIdByUsername(username) {
+      try {
+        const query = `
+          SELECT UserID
+          FROM UserIdByUserName
+          WHERE UserName = $1;
+        `;
+    
+        const values = [username]; // Use parameterized values to prevent SQL injection
+    
+        const result = await pool.query(query, values);
+    
+        if (result.rows.length > 0) {
+          return result.rows[0].userid; // Return the UserID
+        } else {
+          return null; // User not found
+        }
+      } catch (err) {
+        console.error('Error querying the database:', err);
+        throw err; // Re-throw the error for handling by the caller
+      }
+    };
   
    
     

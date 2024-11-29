@@ -1,0 +1,116 @@
+const db = require('./db.js');
+
+try {
+db.connect();
+}
+catch (error) {
+console.error('Error connecting to the database:', error);
+}
+
+class AuctionModel {
+    constructor(db) {
+      this.db = db;
+      let CurrentID = 680000; // dummy for now 
+    }
+  
+    
+    // the time has to be in the formate (YYYY-MM-DD HH:MM:SS) eg (2024-11-29 14:30:00)
+    // to do --> how to get the IDs to insert them 
+    async StartAuction(artID , startTime , endDTime , startingBid) {
+      
+      try{
+        const query = `
+       INSERT INTO auction (auctionid , artid , starttime , endtime , startingbid)
+       values($1 , $2 , $3 ,$4 , $5)
+       RETURNING *;
+       `;
+        const values = [CurrentID , artID , startTime , endDTime , startingBid];
+        const result = await this.db.query(query , values);
+        CurrentID++;
+        return result.rows[0];
+    
+      }
+    
+     catch(err){
+        console.error("Error adding Auction", err.message);
+        throw err;
+      }
+
+    }
+
+   
+    async DisplayAuctions() {
+        try {
+          const query = `SELECT * FROM auction`;
+          const result = await this.db.query(query);
+      
+          const currentTime = new Date();
+          const availableAuctions = result.rows.filter(auction => {
+            const startTime = new Date(auction.starttime);
+            const endTime = new Date(auction.endtime);
+      
+            return currentTime >= startTime && currentTime <= endTime;
+          });
+      
+          return availableAuctions;
+
+        } catch (err) {
+          console.error("Error fetching auctions:", err.message);
+          throw err;
+        }
+      }
+
+      async UpdateHighestBid(auctionID, HighestBid) {
+        try {
+          // getting the previous highest bid
+          const query1 = `
+            SELECT highestbid
+            FROM auction
+            WHERE auctionid = $1;
+          `;
+          const value = [auctionID];
+          const result = await this.db.query(query1, value);
+      
+          
+          if (result.rows.length === 0) {
+            throw new Error(`Auction with ID ${auctionID} not found.`);
+          }
+      
+          let currentHighest = result.rows[0].highestbid;
+      
+         
+          if (HighestBid > currentHighest) {
+            try {
+
+              // trying to update highest bid
+              const updateQuery = `   
+
+                UPDATE auction
+                SET highestbid = $1
+                WHERE auctionid = $2;
+              `;
+              const updateValues = [HighestBid, auctionID];
+              await this.db.query(updateQuery, updateValues);
+      
+              return { success: true, msg: "Highest bid updated successfully." };
+            } catch (err) {
+              console.error("Failed to update highest bid:", err);
+              throw err;
+            }
+          } else {
+            return {
+              success: false,
+              msg: "The current bid is smaller than or equal to the highest bid.",
+            };
+          }
+        } catch (err) {
+          console.error("Error updating highest bid:", err.message);
+          throw err;
+        }
+      }
+      
+   
+    
+};
+
+  module.exports =new AuctionModel(db); // Export an instance of the class
