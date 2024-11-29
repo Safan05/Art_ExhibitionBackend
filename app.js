@@ -4,11 +4,17 @@ const bodyParser = require("body-parser");
 const pg=require("pg");
 const path=require("path");
 const register=require("./routes/register");
+const login = require("./routes/authenticate");
+const admin = require("./routes/admin");
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use("/helloWorld",(req,res)=>{
     res.send("Hello World");
 });
 app.use("/register",register);
+app.use("/login",login);
+app.use("/admin",admin);
 const port = process.env.port||3000;
 app.listen(port,()=>{console.log(`listening to port ${port}`)});

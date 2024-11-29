@@ -43,31 +43,50 @@ class UserModel {
       }
     };
     // check username existance
-    async checkUsernameExists(username){
+    async checkUsernameExists(username) {
       try {
-        const query = "SELECT 1 FROM users WHERE username = $1";    
+        const query = "SELECT * FROM users WHERE username = $1";    
         const result = await this.db.query(query, [username]);
     
         if (result.rows.length > 0) {
           console.log("Username exists in the database.");
-          return true;
+          return result.rows[0]; // Return the whole user object (first user found)
         } else {
           console.log("Username does not exist in the database.");
-          return false;
+          return null; // Return null if no user found
         }
       } catch (error) {
         console.error("Error checking username existence:", error.message);
         throw error; 
       }
     };
-    // get maxId
+    
+    // get max id
     async getMaxId(){
       try {
         const query = "SELECT MAX(userid) FROM users";    
         const result = await this.db.query(query);
         return result.rows[0];
       } catch (error) {
-        console.error("Error getting maxId:", error.message);
+        console.error("Error getting max id:", error.message);
+        throw error; 
+      }
+    };
+    // check unique card number
+    async checkCardNumberExists(cardnumber){
+      try {
+        const query = "SELECT 1 FROM users WHERE cardnumber = $1";    
+        const result = await this.db.query(query, [cardnumber]);
+    
+        if (result.rows.length > 0) {
+          console.log("Card number exists in the database.");
+          return true;
+        } else {
+          console.log("Card number does not exist in the database.");
+          return false;
+        }
+      } catch (error) {
+        console.error("Error checking card number existence:", error.message);
         throw error; 
       }
     };

@@ -1,0 +1,8 @@
+Register:
+{"email":"admin5@admin.com","password":"admingd","username":"safan07","name":"Abdallah","age":"19","address":"Egypt","gender":"male","phonenumber":"01289090397","cardnumber":"12443","cardexpiredate":"10/10/2028"}
+
+login:
+{
+    "username":"safan",
+    "password":"admin"
+}
