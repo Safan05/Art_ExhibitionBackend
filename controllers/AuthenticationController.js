@@ -10,8 +10,10 @@ const login=async (req,res)=>{
         if(!validpass)
             return res.status(300).send("Invalidpassword");
         const token=GenToken(user);
-        res.header("x-auth-token",token);
-        res.cookie("x-auth-token",token);
+        res.clearCookie("Role");
+        res.clearCookie("x-auth-token");
+        res.cookie("Role",user.role,{httpOnly:false,secure: false,  expires:null});
+        res.cookie("x-auth-token",token,{httpOnly:true,expires:null,  sameSite: 'None',   secure: true});
         res.status(200).send("Logged in successfully");
     }
     catch(err){

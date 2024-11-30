@@ -1,12 +1,16 @@
 const express=require("express");
 const app = express();
-const bodyParser = require("body-parser");
-const pg=require("pg");
-const path=require("path");
+const helmet = require("helmet");
+const cors = require('cors');
 const register=require("./routes/register");
 const login = require("./routes/authenticate");
 const admin = require("./routes/admin");
 const cookieParser = require('cookie-parser');
+app.use(helmet());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));

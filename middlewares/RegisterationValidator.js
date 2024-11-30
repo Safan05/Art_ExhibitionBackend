@@ -1,7 +1,5 @@
 const validator=require("../util/Validator.js");
 module.exports=(req,res,nxt)=>{
-    console.log("validating...");
-    console.log(req.body);
     let valid=validator(req.body);
     if(valid){
         req.valid=1;
