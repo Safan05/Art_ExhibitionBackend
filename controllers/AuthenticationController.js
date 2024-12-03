@@ -3,6 +3,10 @@ const GenToken = require("../util/AuthorizationToken");
 const bcrypt = require("bcrypt");
 const login=async (req,res)=>{
     try{
+        res.clearCookie("Role");
+        res.clearCookie("x-auth-token");
+        res.clearCookie("Logged");
+        res.clearCookie("name");
         let user=await users.getUserByusername(req.body.username);
         if(!user)
             return res.status(300).send("Invalid username");
@@ -10,9 +14,9 @@ const login=async (req,res)=>{
         if(!validpass)
             return res.status(300).send("Invalidpassword");
         const token=GenToken(user);
-        res.clearCookie("Role");
-        res.clearCookie("x-auth-token");
         res.cookie("Role",user.role,{httpOnly:false,secure: false,  expires:null});
+        res.cookie("Logged","true",{httpOnly:false,secure: false,  expires:null});
+        res.cookie("name",user.name,{httpOnly:false,secure: false,  expires:null});
         res.cookie("x-auth-token",token,{httpOnly:true,expires:null,  sameSite: 'None',   secure: true});
         res.status(200).send("Logged in successfully");
     }
