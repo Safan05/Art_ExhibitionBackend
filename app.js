@@ -5,6 +5,7 @@ const cors = require('cors');
 const register=require("./routes/register");
 const login = require("./routes/authenticate");
 const admin = require("./routes/admin");
+const arts = require("./routes/Arts");
 const cookieParser = require('cookie-parser');
 app.use(helmet());
 app.use(cors({
@@ -20,5 +21,6 @@ app.use("/helloWorld",(req,res)=>{
 app.use("/register",register);
 app.use("/login",login);
 app.use("/admin",admin);
+app.use("/arts",arts);
 const port = process.env.port||3000;
 app.listen(port,()=>{console.log(`listening to port ${port}`)});

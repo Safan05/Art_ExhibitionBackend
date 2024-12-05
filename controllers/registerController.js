@@ -33,4 +33,29 @@ catch(err){
     console.log(err);
 }
     }
-module.exports={register}
+const updatePassword= async (req,res)=>{
+    try{
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const payload=jwt.verify(token,"OurjwtSecret");
+    const id=payload._id;
+    let hashedpass=await bcrypt.hash(req.body.password,salt);
+    await users.updatePassword(id,hashedpass);
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+const updateProfilepic= async (req,res)=>{
+    try{
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const payload=jwt.verify(token,"OurjwtSecret");
+    const id=payload._id;
+    await users.updateProfilepic(id,req.body.profilePic);
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+module.exports={register,updatePassword,updateProfilepic}

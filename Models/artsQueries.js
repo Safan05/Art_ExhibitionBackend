@@ -47,8 +47,7 @@ class ArtsModel {
       }
     }
 
-    async RateArt(username ,artID , rate , comment){
-    const userid = users.getUserIdByUsername(username);
+    async RateArt(userid ,artID , rate , comment){
       try{
         const query = `
         INSERT INTO reviews (clientid , artid , rate , comments)
@@ -61,6 +60,24 @@ class ArtsModel {
       catch(err){
         console.error('Error adding the rate:', err.message);
         throw err;
+      }
+    }
+
+    async AddArt(artID , artistId , photo , artname , baseprice , releasedate  , description){
+
+      try{
+        const query= 
+        `INSERT INTO arts (artid , theartistid , photo , artname , baseprice , releasedate , description )
+        values($1 ,$2 ,$3 ,$4 ,$5 , $6 ,$7)
+        RETURNING *`
+
+        const value = [artID , artistId , photo , artname , baseprice , releasedate , description]
+        const result = await this.db.query(query , values);
+        return result.rows[0];
+
+      }
+      catch(err){
+        console.error("error adding art" ,err.message );
       }
     }
 

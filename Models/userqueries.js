@@ -106,6 +106,46 @@ class UserModel {
         throw error;
       }
     };
+    // update user password
+    async updatePassword(userid,password){
+      try{
+        const query =`
+        UPDATE users
+        SET password = $1 
+        where US.id = $2
+        RETURNING *`
+        ;
+
+        const value =  [password  , userid];
+        const result = await this.db.query(query , values);
+        return result.rows[0];
+      }
+      catch(err){
+        console.error('error updating password');
+        throw err;
+      }
+    }
+
+    
+    async updateProfilepic(userid,profilepic){
+      try{
+        const query =`
+        UPDATE users
+        SET profilepic=$1
+        where US.id = $2
+        RETURNING *`
+        ;
+
+        const value =  [profilepic  , userid];
+        const result = await this.db.query(query , values);
+        return result.rows[0];
+      }
+      catch(err){
+        console.error('error updating profile picure');
+        throw err;
+      }
+    }
+
 
     async  getUserIdByUsername(username) {
       try {

@@ -11,4 +11,6 @@ router.post('/logout', (req,res)=>{
     res.clearCookie("name");
     res.status(200).send("Logged out successfully");
 });
+router.put('/password', registercontroller.updatePassword);
+router.put('/profilePic', registercontroller.updateProfilepic);
 module.exports= router;
