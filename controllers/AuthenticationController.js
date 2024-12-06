@@ -12,7 +12,7 @@ const login=async (req,res)=>{
             return res.status(300).send("Invalid username");
         let validpass=await bcrypt.compare(req.body.password,user.password);
         if(!validpass)
-            return res.status(300).send("Invalidpassword");
+            return res.status(300).send("Invalid password");
         const token=GenToken(user);
         res.cookie("Role",user.role,{httpOnly:false,secure: false,  expires:null});
         res.cookie("Logged","true",{httpOnly:false,secure: false,  expires:null});
@@ -22,6 +22,7 @@ const login=async (req,res)=>{
     }
     catch(err){
         console.log(err);
+        res.status(500).send("Internal error sorry !");
     }
 }
 module.exports={login};

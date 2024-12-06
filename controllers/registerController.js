@@ -31,6 +31,7 @@ const register=async (req,res)=>{
 }
 catch(err){
     console.log(err);
+    res.status(500).send("Internal error sorry !");
 }
     }
 const updatePassword= async (req,res)=>{
@@ -44,6 +45,7 @@ const updatePassword= async (req,res)=>{
     }
     catch(err){
         console.log(err);
+        res.status(500).send("Internal error sorry !");
     }
 }
 const updateProfilepic= async (req,res)=>{
@@ -56,6 +58,7 @@ const updateProfilepic= async (req,res)=>{
     }
     catch(err){
         console.log(err);
+        res.status(500).send("Internal error sorry !");
     }
 }
 module.exports={register,updatePassword,updateProfilepic}
