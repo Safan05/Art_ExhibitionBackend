@@ -48,16 +48,39 @@ class ArtsModel {
     // getting all the arts with a newer to older ordering (reverse the rows)
     async getArtsNew() {
       try {
-        const query = `SELECT * FORM ARTS`;
+        const query = `SELECT * FROM ARTS`;
         const result = await this.db.query(query);
-        result.reverse();
-        return result;
-      } catch (error) {
-        console.error('Error creating user:', error);
-        throw error;
+        result.rows.reverse();
+        return result.rows;
+      } 
+      catch (error) {
+        
+      console.error('Error getting arts:', error);
+      throw error;
       }
     }
-
+    async getArtsLimit(){
+      try{
+        const query = 'SELECT * FROM arts LIMIT 5';
+        const result = await this.db.query(query);
+        return result.rows;
+      }
+      catch(err){
+        console.log(err);
+        throw err;
+      }
+    }
+    async getMaxRateId(){
+      try{
+        const query = 'SELECT MAX(rateid) FROM reviews';
+        const result = await this.db.query(query);
+        return result.rows[0].max;
+      }
+      catch(err){
+        console.log(err);
+        throw err;
+      }
+    }
     async RateArt(userid ,artID , rate , comment){
       try{
         const query = `

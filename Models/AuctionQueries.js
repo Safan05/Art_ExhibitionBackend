@@ -16,29 +16,88 @@ class AuctionModel {
     
     // the time has to be in the formate (YYYY-MM-DD HH:MM:SS) eg (2024-11-29 14:30:00)
     // to do --> how to get the IDs to insert them 
-    async StartAuction(artID , startTime , endDTime , startingBid) {
-      
+    async getAuctionByID(auctionID) {
       try{
-        const query = `
-       INSERT INTO auction (auctionid , artid , starttime , endtime , startingbid)
-       values($1 , $2 , $3 ,$4 , $5)
-       RETURNING *;
-       `;
-        const values = [CurrentID , artID , startTime , endDTime , startingBid];
-        const result = await this.db.query(query , values);
-        CurrentID++;
+        const query=`SELECT * FROM auction WHERE auctionid = $1
+        Values($1)
+        `;
+
+        const values=[auctionID];
+        const result = await this.db.query(query,values);
         return result.rows[0];
-    
       }
-    
-     catch(err){
-        console.error("Error adding Auction", err.message);
+      catch(err){
+        console.error("Error fetching auction", err.message);
         throw err;
       }
-
     }
-
-   
+    async RequestAuction(auctionID, artID, startTime, endDTime, startingBid) {
+        
+        try{
+          const query = `
+        INSERT INTO auction (auctionid ,artid , starttime , endtime , startingbid , status)
+        values($1 , $2 , $3 ,$4 , $5 , 'pending')
+        RETURNING *;
+        `;
+          const values = [auctionID ,artID , startTime , endDTime , startingBid ];
+          const result = await this.db.query(query , values);
+          CurrentID++;
+          return result.rows[0];
+      
+        }
+      
+      catch(err){
+          console.error("Error adding Auction", err.message);
+          throw err;
+        }
+    }
+    async StartAuction(auctionID, startTime, endDTime, startingBid) {
+      try {
+          const query = `
+              UPDATE auction
+              SET starttime = $2 endtime = $3, startingbid = $4, status = 'approved'
+              WHERE auctionid = $1
+              RETURNING *;
+          `;
+          const values = [auctionID, startTime, endDTime, startingBid];
+          const result = await this.db.query(query, values);
+          CurrentID++;
+          return result.rows[0];
+      } catch (err) {
+          console.error("Error starting Auction", err.message);
+          throw err;
+      }
+  }
+  async rejectAuction(auctionID) {
+    try {
+        const query = `
+            UPDATE auction
+            SET status = 'cancelled'
+            WHERE auctionid = $1
+            RETURNING *;
+        `;
+        const values = [auctionID];
+        const result = await this.db.query(query, values);
+        return result.rows[0];
+    } catch (err) {
+        console.error("Error rejecting Auction", err.message);
+        throw err;
+    }
+  } 
+  async deleteAuction(auctionID) {
+    try {
+        const query = `
+            DELETE FROM auction
+            WHERE auctionid = $1
+            RETURNING *;
+        `;
+        const values = [auctionID];
+        const result = await this.db.query(query, values);
+        return result.rows[0];
+    } catch (err) {
+        console.error("Error deleting Auction", err.message);
+        throw err;}
+  }
     async DisplayAuctions() {
         try {
           const query = `SELECT * FROM auction`;

@@ -13,6 +13,8 @@ const login=async (req,res)=>{
         let validpass=await bcrypt.compare(req.body.password,user.password);
         if(!validpass)
             return res.status(300).send("Invalid password");
+        if(user.status!="available")
+            return res.status(300).send("Account is not banned");
         const token=GenToken(user);
         res.cookie("Role",user.role,{httpOnly:false,secure: false,  expires:null});
         res.cookie("Logged","true",{httpOnly:false,secure: false,  expires:null});

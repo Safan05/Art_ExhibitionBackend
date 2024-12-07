@@ -1,0 +1,10 @@
+const express = require('express');
+const router = express.Router();
+const clientController = require("../controllers/ClientController");
+router.post('/review',clientController.addReview);
+router.post('/addFollower',clientController.addFollower);
+router.delete('/removeFollower',clientController.deleteFollower);
+router.post('/addWishlist',clientController.addToWishlist);
+router.delete('/removeWishlist',clientController.RemoveFromWishlst);
+router.get('/getWishlist',clientController.getWishlist);
+module.exports = router;

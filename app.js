@@ -8,6 +8,8 @@ const admin = require("./routes/admin");
 const arts = require("./routes/Arts");
 const artist = require("./routes/artist");
 const uploadimg = require("./routes/imgupload");
+const user = require('./routes/users');
+const Client=require('./routes/client');
 const cookieParser = require('cookie-parser');
 app.use(helmet());
 app.use(cors({
@@ -26,5 +28,7 @@ app.use("/login",login);
 app.use("/admin",admin);
 app.use("/arts",arts);
 app.use("/upload",uploadimg);
+app.use("/client",Client);
+app.use("/user",user);
 const port = process.env.port||3000;
 app.listen(port,()=>{console.log(`listening to port ${port}`)});

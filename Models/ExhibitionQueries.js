@@ -10,13 +10,22 @@ console.error('Error connecting to the database:', error);
 class ExhibitionModel {
     constructor(db) {
       this.db = db;
-      let CurrentExhibitonID = 780000; // dummy for now 
     }
-  
+    async getMaxId(){
+      try{
+      const query = 'SELECT MAX(exhibitionid) FROM exhibition';
+      const result = await this.db.query(query);
+      return result.rows[0].max;
+      }
+      catch(err){
+        console.log(err);
+        throw err;
+      }
+}
     
     // the time has to be in the formate (YYYY-MM-DD HH:MM:SS) eg (2024-11-29 14:30:00)
     // to do --> how to get the IDs to insert them 
-    async StartExhibition(title, theme , startTime , endTime ) {
+    async StartExhibition(exhibitionID,title, theme , startTime , endTime ) {
       
       try{
         const query = `
@@ -24,7 +33,7 @@ class ExhibitionModel {
        values($1 , $2 , $3 ,$4 , $5)
        RETURNING *;
        `;
-        const values = [CurrentExhibitionID ,title , theme , startTime , endTime ];
+        const values = [exhibitionID ,title , theme , startTime , endTime ];
         const result = await this.db.query(query , values);
         CurrentID++;
         return result.rows[0];
@@ -37,7 +46,39 @@ class ExhibitionModel {
       }
 
     }
-
+    async updateExhibition(exhibitionID,startTime , endTime ) {
+      try{
+        const query = `
+        UPDATE exhibition
+        SET starttime = $1 , endtime = $2
+        WHERE exhibitionid = $3
+        RETURNING *;
+        `;
+        const values = [startTime , endTime , exhibitionID];
+        const result = await this.db.query(query , values);
+        return result.rows[0];
+      }
+      catch(err){
+        console.error("Error updating Exhibition", err.message);
+        throw err;
+      }
+    }
+    async endExhibition(exhibitionID) {
+      try{
+        const query = `
+        DELETE FROM exhibition
+        WHERE exhibitionid = $1
+        RETURNING *;
+        `;
+        const values = [exhibitionID];
+        const result = await this.db.query(query , values);
+        return result.rows[0];
+      }
+      catch(err){
+        console.error("Error ending Exhibition", err.message);
+        throw err;
+      }
+    }
    
     async DisplayExhibition() {
         try {
@@ -91,7 +132,7 @@ async addArtToExhibition(artID , ExhibitionID){
     RETURNING *
 
   `;
-  const values = [artID,exhibitionID];
+  const values = [artID,ExhibitionID];
 
   
   const result = await this.db.query(query, values);
@@ -103,7 +144,26 @@ async addArtToExhibition(artID , ExhibitionID){
   throw err;
 }
 }
+async RemoveArtFromExhibition(artID , ExhibitionID){
+  try {
+    const query = `
+    DELETE FROM exhibitionarts
+    WHERE artid = $1 AND exhibitionid = $2
+    RETURNING *
 
+  `;
+  const values = [artID,ExhibitionID];
+
+  
+  const result = await this.db.query(query, values);
+
+ 
+  return result.rows[0];
+} catch (err) {
+  console.error('Error removing art from exhibition', err.message);
+  throw err;
+}
+}
 };
 
   module.exports =new ExhibitionModel(db); // Export an instance of the class

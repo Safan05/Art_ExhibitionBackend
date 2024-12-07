@@ -13,7 +13,17 @@ class UserModel {
   
     // Get a user by username 
     // todo: --> need to check for password during auth stage
-   
+    async getUsers(){
+      try {
+        const query = 'SELECT * FROM users WHERE status=$1';
+        const values = ['available'];
+        const result = await this.db.query(query,values);
+        return result.rows;
+      } catch (error) {
+        console.error('Error fetching user :', error);
+        throw error;
+      }
+    }
     async getUserByusername(Username) {
       try {
         const query = 'SELECT * FROM users WHERE username= $1';
