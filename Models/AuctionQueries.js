@@ -13,6 +13,16 @@ class AuctionModel {
       let CurrentID = 680000; // dummy for now 
     }
   
+    async getMaxId(){
+      try{
+      const query = 'SELECT MAX(auctionid) FROM auction';
+      const result = await this.db.query(query);
+      return result.rows[0].max;
+      }
+      catch(err){
+        console.log(err);
+        throw err;
+      }}
     
     // the time has to be in the formate (YYYY-MM-DD HH:MM:SS) eg (2024-11-29 14:30:00)
     // to do --> how to get the IDs to insert them 
@@ -51,6 +61,7 @@ class AuctionModel {
           throw err;
         }
     }
+    
     async StartAuction(auctionID, startTime, endDTime, startingBid) {
       try {
           const query = `
@@ -68,6 +79,24 @@ class AuctionModel {
           throw err;
       }
   }
+  
+  async acceptAuction(auctionID) {
+    try {
+        const query = `
+            UPDATE auction
+            SET status = 'approved'
+            WHERE auctionid = $1
+            RETURNING *;
+        `;
+        const values = [auctionID];
+        const result = await this.db.query(query, values);
+        return result.rows[0];
+    } catch (err) {
+        console.error("Error approving Auction", err.message);
+        throw err;
+    }
+  } 
+
   async rejectAuction(auctionID) {
     try {
         const query = `
@@ -84,6 +113,7 @@ class AuctionModel {
         throw err;
     }
   } 
+  
   async deleteAuction(auctionID) {
     try {
         const query = `
@@ -108,7 +138,7 @@ class AuctionModel {
             const startTime = new Date(auction.starttime);
             const endTime = new Date(auction.endtime);
       
-            return currentTime >= startTime && currentTime <= endTime;
+            return currentTime >= startTime && currentTime <= endTime && auction.status ==="approved";
           });
       
           return availableAuctions;
@@ -168,6 +198,20 @@ class AuctionModel {
         }
       }
       
+      async GetAuctionRequests() {
+        try {
+            const query = `
+                SELECT * FROM auction
+                WHERE status === 'pending'
+                RETURNING *;
+            `;
+            
+            const result = await this.db.query(query);
+            return result.rows;
+        } catch (err) {
+            console.error("Error deleting Auction", err.message);
+            throw err;}
+      }
    
     
 };
