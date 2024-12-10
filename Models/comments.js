@@ -34,8 +34,8 @@ class commentsmodel{
         try{
             const query = `
             SELECT * FROM reviews
-            WHERE submitterid = $1
-            RETURNING *;
+            WHERE artid = $1
+           ;
             `;
             const values = [artid];
             const result = await this.db.query(query , values);

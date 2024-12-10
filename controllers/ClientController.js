@@ -3,18 +3,6 @@ const followers=require('../Models/followQueries');
 const wishlist = require('../Models/wishlistQueries');
 const getId=require('../util/getUserId');
 const artists=require('../Models/userqueries');
-const addReview=async (req,res)=>{
-    const cookies=req.cookies;
-    const token=cookies["x-auth-token"];
-    const id=getId(token);
-    try{
-        arts.addReview(id,req.body.artId,req.body.rate,req.body.comment);
-        res.status(200).send("Review added successfully");
-    }
-    catch(err){
-        res.status(500).send("Internal error sorry !");
-    }
-}
 const addFollower=async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
@@ -93,4 +81,4 @@ const getWishlist = async (req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={addReview,addFollower,deleteFollower,addToWishlist,RemoveFromWishlst,getWishlist};
+module.exports={addFollower,deleteFollower,addToWishlist,RemoveFromWishlst,getWishlist};

@@ -1,6 +1,7 @@
 const users = require("../Models/userqueries");
 const arts = require("../Models/artsQueries")
 const getId=require("../util/getUserId")
+const comments = require("../Models/comments");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 // Controller function to handle upload
@@ -41,8 +42,10 @@ const getArts = async (req,res)=>{
       const allArts=await arts.getArtsNew();
       for(i in allArts){
         const user=await users.getUserById(allArts[i].theartistid);
+        const commentsOnArt=await comments.getCommentsOnArt(allArts[i].artid);
         allArts[i].artistName=user.username;
         allArts[i].artistPic=user.profilepic;
+        allArts[i].comments=commentsOnArt;
       }
       console.log(allArts);
       res.send(allArts);
@@ -50,6 +53,13 @@ const getArts = async (req,res)=>{
     else
     {
       const allArts=await arts.getArtsLimit();
+      for(i in allArts){
+        const user=await users.getUserById(allArts[i].theartistid);
+        const commentsOnArt=await comments.getCommentsOnArt(allArts[i].artid);
+        allArts[i].artistName=user.username;
+        allArts[i].artistPic=user.profilepic;
+        allArts[i].comments=commentsOnArt;
+      }
       res.send(allArts);
     }
 }
@@ -62,10 +72,21 @@ const reviewArt = async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
     const id=getId(token);
-    await arts.reviewArt(id,req.body.artId,req.body.rate,req.body.comment);
+    await comments.addComment(id,req.body.artId,req.body.comment,req.body.rate);
     }
     catch(err){
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={addArt,getArts,reviewArt};
+const deleteReview = async(req,res)=>{
+    try{
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const id=getId(token);
+    await comments.deletecomment(req.body.artId,id);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+module.exports={addArt,getArts,reviewArt,deleteReview};
