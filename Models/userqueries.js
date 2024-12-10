@@ -24,6 +24,16 @@ class UserModel {
         throw error;
       }
     }
+    async getUserById(Id){
+      try {
+        const query = 'SELECT username FROM users WHERE userid= $1';
+        const result = await this.db.query(query, [Id]);
+        return result.rows[0];
+      } catch (error) {
+        console.error('Error fetching user :', error);
+        throw error;
+      }
+    }
     async getUserByusername(Username) {
       try {
         const query = 'SELECT * FROM users WHERE username= $1';

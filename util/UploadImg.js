@@ -1,27 +1,19 @@
 const multer = require("multer");
 const path = require("path");
-
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../../../Web/ArtSpace/src/assets/testImages")); // Folder to store images
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // Unique filename
-  },
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({ 
+  cloud_name: 'dd8pi6fw3', 
+  api_key: '746346311168225', 
+  api_secret: 'OmHBEiHJsMdYswiBVOUygPtBknQ' // Click 'View API Keys' above to copy your API secret
 });
-
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(), // Store file in memory
   fileFilter: (req, file, cb) => {
-    // Validate file type (allow only images)
-    console.log("check file name");
     const fileTypes = /jpeg|jpg|png|gif/;
     const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimeType = fileTypes.test(file.mimetype);
 
     if (extName && mimeType) {
-    
       return cb(null, true);
     } else {
       cb(new Error("Only images are allowed!"));
