@@ -3,6 +3,7 @@ const followers=require('../Models/followQueries');
 const wishlist = require('../Models/wishlistQueries');
 const getId=require('../util/getUserId');
 const artists=require('../Models/userqueries');
+
 const addFollower=async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];

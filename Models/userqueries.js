@@ -179,6 +179,7 @@ class UserModel {
 
     async  getUserIdByUsername(username) {
       try {
+        console.log (username);
         const query = `
           SELECT UserID
           FROM UserIdByUserName
@@ -187,7 +188,7 @@ class UserModel {
     
         const values = [username]; // Use parameterized values to prevent SQL injection
     
-        const result = await pool.query(query, values);
+        const result = await this.db.query(query, values);
     
         if (result.rows.length > 0) {
           return result.rows[0].userid; // Return the UserID
