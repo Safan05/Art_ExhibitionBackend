@@ -36,6 +36,24 @@ const deleteFollower = async (req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
+const getFollowings = async (req,res)=>{
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const id=getId(token);
+    console.log(id);
+    try{
+        const result=await followers.getClientFollows(id);
+        const follower=[];
+        for(i in result){
+            const artist=await artists.getArtistById(result[i]);
+            follower.push(artist);
+        }
+        res.status(200).send(follower);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
 const addToWishlist =  async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
@@ -81,4 +99,13 @@ const getWishlist = async (req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={addFollower,deleteFollower,addToWishlist,RemoveFromWishlst,getWishlist};
+const getArtists = async (req,res)=>{
+    try{
+        const result=await artists.getArtists();
+        res.status(200).send(result);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+module.exports={addFollower,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists};

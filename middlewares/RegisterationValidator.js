@@ -5,6 +5,8 @@ module.exports=(req,res,nxt)=>{
         req.valid=1;
         nxt();
     }
-    else
+    else{
+        console.log(req.body);
         res.status(403).send("Bad Request ..... enter a valid data");
+    }
 }

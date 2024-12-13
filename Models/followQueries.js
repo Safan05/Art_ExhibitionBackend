@@ -57,6 +57,36 @@ class FollowModel {
           throw err;
         }
       }
+      async getClientFollows(clientID) {
+        try {
+          const query = `
+            SELECT artistid
+            FROM following
+            WHERE clientid = $1;
+          `;
+          const values = [clientID];
+          const result = await this.db.query(query, values);
+          return result.rows.map(row => row.artistid); // Return an array of artist IDs
+        } catch (err) {
+          console.error('Error fetching client follows:', err.message);
+          throw err;
+        }
+      }
+      async getArtistFollowers(artistID) {
+        try {
+          const query = `
+            SELECT clientid
+            FROM following
+            WHERE artistid = $1;
+          `;
+          const values = [artistID];
+          const result = await this.db.query(query, values);
+          return result.rows.map(row => row.clientid); // Return an array of client IDs
+        } catch (err) {
+          console.error('Error fetching artist followers:', err.message);
+          throw err;
+        }
+      }
  
 
 }

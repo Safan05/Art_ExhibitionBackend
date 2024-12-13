@@ -34,6 +34,16 @@ class UserModel {
         throw error;
       }
     }
+    async getArtistById(Id){
+      try {
+        const query = 'SELECT * FROM users WHERE userid= $1';
+        const result = await this.db.query(query, [Id]);
+        return result.rows[0];
+      } catch (error) {
+        console.error('Error fetching user :', error);
+        throw error;
+      }
+    }
     async getUserByusername(Username) {
       try {
         const query = 'SELECT * FROM users WHERE username= $1';
@@ -189,7 +199,17 @@ class UserModel {
         throw err; // Re-throw the error for handling by the caller
       }
     };
-  
+  async getArtists(){
+    try {
+      const query = 'SELECT * FROM users WHERE role=$1';
+      const values = ['Artist'];
+      const result = await this.db.query(query,values);
+      return result.rows;
+    } catch (error) {
+      console.error('Error fetching user :', error);
+      throw error;
+    }
+  }
    
     
   }
