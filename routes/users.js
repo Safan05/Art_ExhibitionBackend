@@ -4,5 +4,5 @@ const userController = require('../controllers/UserController');
 router.post('/Feedback',userController.addFeedback);
 router.put('/Feedback',userController.updateFeedback);
 router.delete('/Feedback',userController.deleteFeedback);
-router.get('/name',userController.getartistName);
+router.get('/name',userController.getartistName);   // done front
 module.exports = router;

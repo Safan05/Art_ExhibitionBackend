@@ -11,13 +11,8 @@ const BanUser=async (req,res)=>{
     const token=cookies["x-auth-token"];
     const id=getId(token);
     try{
-        let user=await users.checkUsernameExists(req.body.username);
-        if(!user)
-        {
-            res.status(404).send("User not found");
-            return;
-        }
-        await bans.BanUser(req.body.username,id,req.body.reason);
+        console.log(req.body);
+        await bans.BanUser(req.body.userID,id,req.body.reason);
         res.status(200).send("User banned successfully");
     }
     catch(err){
@@ -26,12 +21,12 @@ const BanUser=async (req,res)=>{
 }
 const getUsers=async (req,res)=>{
     try{
-        console.log("Getting users...")
+        console.log("Getting users...");
         const allUsers=await users.getUsers();
         res.send(allUsers);
     }
     catch(err){
-        res.status(500).send("Internal error sorry !");
+        res.status(300).send("Internal error sorry !");
     }
 }
 const getBannedUsers=async (req,res)=>{
@@ -66,13 +61,14 @@ const BanArt=async(req,res)=>{
     const token=cookies["x-auth-token"];
     const id=getId(token);
     try{
-        let art=await arts.getArtById(req.body.artId);
+        let art=await arts.getArtById(req.body.artID);
         if(!art)
         {
+            console.log("Art not found"+art);
             res.status(404).send("Art not found");
             return;
         }
-        await bans.DeleteArt(req.body.artId,id,req.body.reason);
+        await bans.DeleteArt(req.body.artID,id,req.body.reason);
         res.status(200).send("Art banned successfully");
     }
     catch(err){
@@ -84,13 +80,13 @@ const unBanArt=async(req,res)=>{
     const token=cookies["x-auth-token"];
     const id=getId(token);
     try{
-        let art=await arts.getBannedArtById(req.body.artId);
+        let art=await bans.getBannedArtById(req.body.artID);
         if(!art)
         {
             res.status(404).send("Art not found");
             return;
         }
-        await bans.removeDeletedArt(req.body.artId,id);
+        await bans.removeDeletedArt(req.body.artID,id);
         res.status(200).send("Art unbanned successfully");
     }
     catch(err){
@@ -264,6 +260,36 @@ const deleteAuction=async(req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
+const MakeAdmin=async(req,res)=>{
+    try{
+        let user=await users.checkUsernameExists(req.body.username);
+        if(!user)
+        {
+            res.status(404).send("User not found");
+            return;
+        }
+        await users.MakeAdmin(req.body.username);
+        res.status(200).send("User is now an admin");
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+const RemoveAdmin=async(req,res)=>{
+    try{
+        let user=await users.checkUsernameExists(req.body.username);
+        if(!user)
+        {
+            res.status(404).send("User not found");
+            return;
+        }
+        await users.RemoveAdmin(req.body.username);
+        res.status(200).send("User is no longer an admin");
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
 module.exports={BanUser,
     getUsers,
     getBannedUsers,
@@ -280,5 +306,7 @@ module.exports={BanUser,
     getExhibitionArts,
     approveAuction,
     rejectAuction,
-    deleteAuction
+    deleteAuction,
+    MakeAdmin,
+    RemoveAdmin
 };
