@@ -39,6 +39,15 @@ const deleteFeedback=async(req,res)=>{
         res.status(500).send("Error deleting the feedback !");
     }
 }
+const getFeedback=async(req,res)=>{
+    try{
+        const feedback=await feedbackQueries.getFeedbacks();
+        res.send(feedback);
+    }
+    catch(err){
+        res.status(500).send("Error getting the feedback !");
+    }
+}
 const getartistName=async(req,res)=>{
     try{
         const artist=await userQueries.getUserById(req.body.artistId);
@@ -52,5 +61,6 @@ module.exports = {
     addFeedback,
     updateFeedback,
     deleteFeedback,
-    getartistName
+    getartistName,
+    getFeedback
 };

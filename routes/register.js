@@ -2,7 +2,7 @@ const express = require('express');
 const  registercontroller  = require('../controllers/registerController');
 const validator = require('../middlewares/RegisterationValidator');
 const router = express.Router();
-router.post('/', validator,registercontroller.register);
+router.post('/', validator,registercontroller.register);    // done front
 router.post('/logout', (req,res)=>{
     console.log("logging out...");
     res.clearCookie("Role");

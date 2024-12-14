@@ -13,10 +13,9 @@ class BanModel {
     }
   
 
-    async BanUser(Username , adminID , cause) {
-      const userID = users.getUserIdByUsername(Username);
-
+    async BanUser(userID , adminID , cause) {
       try{
+        console.log(userID);
         const query2 = `
         update users
         SET status = $1 
@@ -32,10 +31,10 @@ class BanModel {
       }
 finally{
       try{
-        const time =  new Date().toISOString().split('T')[0]; 
+        const time =  new Date(); 
 
         const query1 = `
-        INSERT INTO bannedusers (bannedid , adminid , cause , date)
+        INSERT INTO bannedusers (bannedid , adminid , cause , banneddate)
         values($1 , $2 , $3 , $4)
         RETURNING *;
         `;
@@ -52,8 +51,7 @@ finally{
 
     }
   }
-    async DeleteArt(artID , admin  , cause){
-        const adminID = users.getUserIdByUsername(admin);
+    async DeleteArt(artID , adminID  , cause){
 try{
         const query2 = `
         update arts
@@ -71,10 +69,9 @@ try{
       }
 
       try{
-        const time =  new Date().toISOString().split('T')[0]; 
-
+        const time =  new Date(); 
         const query1 = `
-        INSERT INTO deletedarts (artid , adminid , cause , deleteddate)
+        INSERT INTO deletedarts (artid , adminid , cause , deletedate)
         values($1 , $2 , $3 , $4)
         RETURNING *;
         `;
@@ -93,15 +90,8 @@ try{
 async getBannedUsers() {
     try {
         const query = `
-            SELECT 
-                u1.username AS banned_user, 
-                u2.username AS admin_user
-            FROM 
-                bannedusers bu
-            JOIN 
-                users u1 ON bu.user_id = u1.id
-            JOIN 
-                users u2 ON bu.admin_id = u2.id;
+      SELECT * FROM users
+      WHERE status = 'banned';
         `;
         const result = await this.db.query(query);
         return result.rows;
@@ -111,14 +101,13 @@ async getBannedUsers() {
     }
 }
   async unBanUser(Username , adminID) {
-    const userID = users.getUserIdByUsername(Username);
-
+    const userID = await users.getUserIdByUsername(Username);
     try{
       const query1 = `
       update users
       SET status = $1 
       where userid = $2`;
-      const values1 = ["active" , userID];  
+      const values1 = ["available" , userID];  
       await this.db.query(query1 , values1);
       const query2 = `
       DELETE FROM bannedusers
@@ -174,7 +163,7 @@ async getBannedUsers() {
   }   
  async getBannedArts(){
     try{
-      const query = 'SELECT * FROM deletedarts';
+      const query = `SELECT * FROM Arts WHERE status = 'deleted' `;
       const result = await this.db.query(query);
       return result.rows;
     }

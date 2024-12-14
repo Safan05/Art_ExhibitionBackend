@@ -38,7 +38,6 @@ const getArts = async (req,res)=>{
     const logged=cookies["Logged"];
     try{
     if(logged=="true"){
-      console.log("Getting arts...");
       const allArts=await arts.getArtsNew();
       for(i in allArts){
         const user=await users.getUserById(allArts[i].theartistid);
@@ -46,8 +45,14 @@ const getArts = async (req,res)=>{
         allArts[i].artistName=user.username;
         allArts[i].artistPic=user.profilepic;
         allArts[i].comments=commentsOnArt;
+        for(j in commentsOnArt){
+        const client=await users.getArtistById(commentsOnArt[j].clientid);
+        if(client){
+          allArts[i].comments[j].clientprofilepic=client.profilepic;
+          allArts[i].comments[j].clientname=client.name;
+        }
       }
-      console.log(allArts);
+    }
       res.send(allArts);
     }
     else
@@ -59,6 +64,13 @@ const getArts = async (req,res)=>{
         allArts[i].artistName=user.username;
         allArts[i].artistPic=user.profilepic;
         allArts[i].comments=commentsOnArt;
+        for(j in commentsOnArt){
+          const client=await users.getArtistById(commentsOnArt[j].clientid);
+          if(client){
+            allArts[i].comments[j].clientprofilepic=client.profilepic;
+            allArts[i].comments[j].clientname=client.name;
+          }
+        }
       }
       res.send(allArts);
     }

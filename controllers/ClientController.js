@@ -9,13 +9,14 @@ const addFollower=async (req,res)=>{
     const token=cookies["x-auth-token"];
     const id=getId(token);
     try{
-        let artist=await artists.getUserByusername(req.body.artistId);
+        console.log(req.body);
+        let artist=await artists.getUserById(req.body.artistId);
         if(!artist)
         {
             res.status(404).send("Artist not found");
             return;
         }
-        await followers.follow(id,req.body.artistId);
+        await followers.follow(req.body.artistId,id);
         res.status(200).send("Followed successfully");
     }
     catch(err){
@@ -27,7 +28,7 @@ const deleteFollower = async (req,res)=>{
     const token=cookies["x-auth-token"];
     const id=getId(token);
     try{
-        const result=await followers.unfollow(id,req.body.artistId);
+        const result=await followers.unfollow(req.body.artistId,id);
         if(result)
         res.status(200).send("Unfollowed successfully");
         else

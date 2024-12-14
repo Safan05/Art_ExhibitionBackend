@@ -23,7 +23,7 @@ class ArtsModel {
       throw err;
     }
     }
-   async getArtById( artID){
+   async getArtById(artID){
     try {
       const query = 'SELECT * FROM arts WHERE artid= $1';
       const result = await this.db.query(query, [artID]);
@@ -48,9 +48,8 @@ class ArtsModel {
     // getting all the arts with a newer to older ordering (reverse the rows)
     async getArtsNew() {
       try {
-        const query = `SELECT * FROM ARTS`;
+        const query = `SELECT * FROM ARTS WHERE status='available' ORDER BY releasedate DESC`;
         const result = await this.db.query(query);
-        result.rows.reverse();
         return result.rows;
       } 
       catch (error) {

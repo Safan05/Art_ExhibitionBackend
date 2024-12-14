@@ -3,19 +3,21 @@ const router = express.Router();
 const authorize=require('../middlewares/AuthorizeAdmin.js');
 const adminController = require('../controllers/AdminController.js');
 router.use(authorize);
-router.get('/Users',adminController.getUsers);
-router.delete('/ban/user',adminController.BanUser);
-router.post('/ban/user',adminController.unBanUser);
-router.get('/ban/user',adminController.getBannedUsers);
-router.delete('/ban/art',adminController.BanArt);
-router.post('/ban/art',adminController.unBanArt);
-router.get('/ban/art',adminController.getBannedArts);
+router.get('/Users',adminController.getUsers);  // done front
+router.post('/ban/user',adminController.BanUser);    // done front
+router.post('/unban/user',adminController.unBanUser); // done front
+router.get('/ban/user',adminController.getBannedUsers); // done front
+router.post('/ban/art',adminController.BanArt); // done front
+router.post('/unban/art',adminController.unBanArt); // done front
+router.get('/ban/art',adminController.getBannedArts); // done front
 router.post('/exhibition',adminController.startExhibition);
-router.delete('/exhibition',adminController.endExhibition);
+router.post('/Endexhibition',adminController.endExhibition);
 router.put('/exhibition',adminController.updateExhibition);
 router.post('/exhibition/arts',adminController.addArtToExhibition);
-router.delete('/exhibition/arts',adminController.removeArtFromExhibition);
+router.post('/exhibition/Remarts',adminController.removeArtFromExhibition);
 router.put('/auction/approve',adminController.approveAuction);
 router.put('/auction/reject',adminController.rejectAuction);
-router.delete('/auction',adminController.deleteAuction);
+router.post('/auction',adminController.deleteAuction);
+router.post('/MakeAdmin',adminController.MakeAdmin);
+router.post('/RemoveAdmin',adminController.RemoveAdmin);
 module.exports = router;
