@@ -66,7 +66,7 @@ const addToWishlist =  async (req,res)=>{
             res.status(404).send("Art not found");
             return;
         }
-        await wishlist.addToWishlist(id,req.body.artId);
+        await wishlist.addToWishlist(req.body.artId , id);
         res.status(200).send("Added to wishlist successfully");
     }
     catch(err){
