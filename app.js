@@ -11,6 +11,8 @@ const uploadimg = require("./routes/imgupload");
 const user = require('./routes/users');
 const Client=require('./routes/client');
 const cookieParser = require('cookie-parser');
+process.on("uncaughtException",(exception)=>{console.log("Exception !")});  // used to handle any sync exception that may happen
+process.on("unhandledRejection",(exception)=>{console.log("Rejection !")});  // used to handle any asyn rejection that may happen
 app.use(helmet());
 app.use(cors({
     origin: 'http://localhost:5173',
