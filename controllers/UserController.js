@@ -1,5 +1,6 @@
 const feedbackQueries = require('../Models/feedbackQueries.js');
 const userQueries = require('../Models/userqueries.js');
+const getId = require('../util/getUserId.js');
 const addFeedback = async (req, res) => {
     try {
         const cookies=req.cookies;
@@ -14,6 +15,18 @@ const addFeedback = async (req, res) => {
         res.status(500).send("Error adding the feedback !");
     }
 };
+const getUserFeedback=async (req,res)=>{
+    try{
+        const cookies=req.cookies;
+        const token=cookies["x-auth-token"];
+        const userid=getId(token);
+        const feedback=await feedbackQueries.getFeedbackById(userid);
+        res.status(200).send(feedback);
+    }
+    catch(err){
+        res.status(500).send("Error getting the feedback !");
+}
+}
 const updateFeedback=async(req,res)=>{
     try{
         const cookies=req.cookies;
@@ -57,10 +70,24 @@ const getartistName=async(req,res)=>{
         res.status(500).send("Error getting the artist name !");
     }
 }
+const getUser=async(req,res)=>{
+    try{
+        const cookies=req.cookies;
+        const token=cookies["x-auth-token"];
+        const id=getId(token);
+        const user=await userQueries.getArtistById(id);
+        res.send(user);
+    }
+    catch(err){
+        res.status(500).send("Error getting the user !");
+    }
+}
 module.exports = {
     addFeedback,
     updateFeedback,
     deleteFeedback,
     getartistName,
-    getFeedback
+    getFeedback,
+    getUser,
+    getUserFeedback
 };

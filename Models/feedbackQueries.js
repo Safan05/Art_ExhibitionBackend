@@ -19,10 +19,22 @@ class FeedBackModel{
           console.log(err);
           throw err;
         }}
+    async getFeedbackById(submitterid){
+        try{
+            const query = 'SELECT * FROM feedback WHERE submitterid = $1';
+            const values = [submitterid];
+            const result = await this.db.query(query , values);
+            return result.rows[0];
+        }
+        catch(err){
+            console.log(err);
+            throw err;
+        }
+    }
     async addFeedback(feedid ,clientid, rate,description,date){
         try{
             const query = `
-            INSERT INTO feedback (feedid , submitterid , rate , description , date)
+            INSERT INTO feedback (feedid , submitterid , rating , description , thedate)
             values($1 , $2, $3 , $4 , $5)
             RETURNING *;
             `;
