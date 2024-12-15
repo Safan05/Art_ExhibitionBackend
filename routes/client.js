@@ -10,8 +10,9 @@ router.post('/addFollower',clientController.addFollower); // done front
 router.post('/removeFollower',clientController.deleteFollower); // done front
 router.get('/getFollowings',clientController.getFollowings); // done front
 router.post('/addWishlist',clientController.addToWishlist); // done front
-router.delete('/removeWishlist',clientController.RemoveFromWishlst);
-router.get('/getWishlist',clientController.getWishlist); // done front
+
+router.delete('/RemoveWishlist',clientController.RemoveFromWishlst); // done front
+router.get('/getWishlist',clientController.getWishlist); //done front
 router.get('/getArtists',clientController.getArtists);  // done front
 router.post("/arts", Controller.getArtistArtpreview); // done front
 module.exports = router;
