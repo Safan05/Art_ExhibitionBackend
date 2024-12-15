@@ -27,7 +27,7 @@ class WishlistModel {
         }
       }
 
-      async RemoveFromWishlst(artID, clientID) {
+      async RemoveFromWishlst( clientID, artID) {
         try {
           const query = `
             DELETE FROM wishlist
