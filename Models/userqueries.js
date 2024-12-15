@@ -121,14 +121,14 @@ class UserModel {
       }
     };
     // Create a new user
-    async createUser(userid , username, email, password, role ,name , address , age , gender , phonenumber, cardnumber , cardexpiredate) {
+    async createUser(userid , username, email, password, role ,name , address , age , gender , phonenumber, cardnumber , cardexpiredate,profilePic) {
       try {
         const query = `
-          INSERT INTO users (userid , username, email, password, role ,name , address , age , gender , phonenumber, cardnumber , expiredate )
-          VALUES ($1, $2, $3, $4 , $5 , $6 , $7 , $8 , $9 , $10 ,$11, $12)
+          INSERT INTO users (userid , username, email, password, role ,name , address , age , gender , phonenumber, cardnumber , expiredate,profilepic )
+          VALUES ($1, $2, $3, $4 , $5 , $6 , $7 , $8 , $9 , $10 ,$11, $12, $13)
           RETURNING *;
         `;
-        const values = [userid , username, email, password, role ,name , address , age , gender , phonenumber, cardnumber , cardexpiredate];
+        const values = [userid , username, email, password, role ,name , address , age , gender , phonenumber, cardnumber , cardexpiredate,profilePic];
         const result = await this.db.query(query, values);
         return result.rows[0];
       } catch (error) {
@@ -142,11 +142,11 @@ class UserModel {
         const query =`
         UPDATE users
         SET password = $1 
-        where US.id = $2
+        where userid = $2
         RETURNING *`
         ;
 
-        const value =  [password  , userid];
+        const values =  [password  , userid];
         const result = await this.db.query(query , values);
         return result.rows[0];
       }
@@ -162,11 +162,11 @@ class UserModel {
         const query =`
         UPDATE users
         SET profilepic=$1
-        where US.id = $2
+        where userid = $2
         RETURNING *`
         ;
 
-        const value =  [profilepic  , userid];
+        const values =  [profilepic  , userid];
         const result = await this.db.query(query , values);
         return result.rows[0];
       }

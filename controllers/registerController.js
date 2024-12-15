@@ -1,6 +1,7 @@
 const users = require("../Models/userqueries");
 const bcrypt = require("bcrypt");  
 const jwt = require("jsonwebtoken");
+const cloudinary = require("cloudinary").v2;
 const register=async (req,res)=>{
     try{
         console.log("creating...");
@@ -19,7 +20,18 @@ const register=async (req,res)=>{
     let id=await users.getMaxId();
     let num=id.max?parseInt(id.max):0;
     console.log(req.body);
-    await users.createUser(num+1,req.body.username,req.body.email,hashedpass,req.body.role,req.body.name,req.body.address,req.body.age,req.body.gender,req.body.phoneNumber,req.body.cardNumber,req.body.cardExpiry);
+    console.log(req.file);
+    const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "ArtExhibtion" }, // Replace with your desired folder in Cloudinary
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer); // Pipe the file buffer to Cloudinary
+      });
+    await users.createUser(num+1,req.body.username,req.body.email,hashedpass,req.body.role,req.body.name,req.body.address,req.body.age,req.body.gender,req.body.phoneNumber,req.body.cardNumber,req.body.cardExpiry,result.secure_url);
     const token=jwt.sign({_id:num+1,Rule:"Client"},"OurjwtSecret");
     res.clearCookie("Role");
     res.clearCookie("x-auth-token");
@@ -36,12 +48,21 @@ catch(err){
     }
 const updatePassword= async (req,res)=>{
     try{
+    console.log("updating...");
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
     const payload=jwt.verify(token,"OurjwtSecret");
     const id=payload._id;
+    let user=await users.getArtistById(id);
+    console.log(user);
+    console.log(req.body);
+    let validpass=await bcrypt.compare(req.body.currentpassword,user.password);
+    if(!validpass)
+        return res.status(300).send("Invalid Current password");
+    let salt=await bcrypt.genSalt(10);
     let hashedpass=await bcrypt.hash(req.body.password,salt);
     await users.updatePassword(id,hashedpass);
+    res.status(200).send("Password updated successfully");
     }
     catch(err){
         console.log(err);
@@ -50,15 +71,36 @@ const updatePassword= async (req,res)=>{
 }
 const updateProfilepic= async (req,res)=>{
     try{
+    console.log("updating...Pic");
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
     const payload=jwt.verify(token,"OurjwtSecret");
     const id=payload._id;
-    await users.updateProfilepic(id,req.body.profilePic);
+    console.log(req.file);
+    const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "ArtExhibtion" }, // Replace with your desired folder in Cloudinary
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer); // Pipe the file buffer to Cloudinary
+      });
+    await users.updateProfilepic(id,result.secure_url);
+    res.status(200).send("Profile pic updated successfully");
     }
     catch(err){
         console.log(err);
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={register,updatePassword,updateProfilepic}
+const logout =(req,res)=>{
+    console.log("logging out...");
+    res.clearCookie("Role");
+    res.clearCookie("x-auth-token");
+    res.clearCookie("Logged");
+    res.clearCookie("name");
+    res.status(200).send("Logged out successfully");
+}
+module.exports={register,updatePassword,updateProfilepic,logout};
