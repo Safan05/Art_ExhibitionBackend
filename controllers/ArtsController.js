@@ -79,6 +79,7 @@ const getArts = async (req,res)=>{
         res.status(500).send("Internal error sorry !"+err.message);
     }
 }
+
 const reviewArt = async (req,res)=>{
     try{
     const cookies=req.cookies;
@@ -90,15 +91,19 @@ const reviewArt = async (req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
+
 const deleteReview = async(req,res)=>{
     try{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
     const id=getId(token);
-    await comments.deletecomment(req.body.artId,id);
+    await comments.getCommentsOnArt(req.body.artId,id);
     }
     catch(err){
         res.status(500).send("Internal error sorry !");
     }
-}
+  }
+
+   
+
 module.exports={addArt,getArts,reviewArt,deleteReview};

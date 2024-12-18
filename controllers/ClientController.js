@@ -78,8 +78,9 @@ const RemoveFromWishlst = async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
     const id=getId(token);
+    console.log(req.query.artId);
     try{
-        const result=await wishlist.RemoveFromWishlst(id,req.body.artId);
+        const result=await wishlist.RemoveFromWishlst(id,req.query.artId);
         if(result)
         res.status(200).send("Removed from wishlist successfully");
         else
