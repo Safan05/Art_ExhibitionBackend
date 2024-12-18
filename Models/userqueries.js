@@ -175,6 +175,33 @@ class UserModel {
         throw err;
       }
     }
+    
+    async updateuser  (userid , email, password, address , phonenumber, cardnumber , cardexpiredate,profilePic) {
+
+      try {
+        const query = `
+          UPDATE users
+          SET email = $2,
+              password = $3,
+              address = $4,
+              phonenumber = $5,
+              cardnumber = $6,
+              expiredate = $7,
+              profilepic = $8
+              WHERE userid = $1
+              RETURNING *;
+          `;
+          const values = [userid, email, password, address, phonenumber, cardnumber ,cardexpiredate , profilePic ];
+          const result = await this.db.query(query, values);
+          return result.rows[0];
+        } catch (error) {
+          console.error('Error updating user:', error);
+          throw error;
+        }
+      
+      
+    }
+
 
 
     async  getUserIdByUsername(username) {

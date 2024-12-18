@@ -12,6 +12,7 @@ class commentsmodel{
 
      // works for updating also
     async addComment(clientid , artid , comments , rate ){
+        
         try{
             const query = `
              INSERT INTO reviews (clientid, artid, comments, rate)
