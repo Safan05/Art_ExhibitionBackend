@@ -3,7 +3,7 @@ const followers=require('../Models/followQueries');
 const wishlist = require('../Models/wishlistQueries');
 const getId=require('../util/getUserId');
 const artists=require('../Models/userqueries');
-
+const reciepts=require('../Models/reciept');
 const addFollower=async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
@@ -110,4 +110,43 @@ const getArtists = async (req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={addFollower,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists};
+const getReceipts = async(req,res)=>{
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const id=getId(token);
+    try{
+        const result=await reciepts.getRecieptByClient(id);
+        res.status(200).send(result);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+const buyArt = async (req,res)=>{
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const id=getId(token);
+    try{
+        const art=await arts.getArtById(req.body.artId);
+        if(!art)
+        {
+            res.status(404).send("Art not found");
+            return;
+        }
+        const artist=await artists.getArtistById(art.theartistid);
+        if(!artist)
+        {
+            res.status(404).send("Artist not found");
+            return;
+        }
+        const d= new Date();
+        const maxid= await reciepts.getMaxId();
+        const recieptid= maxid+1;
+        await reciepts.addReciept(recieptid,id,artist.userid,req.body.description,req.body.artId,art.price);
+        res.status(200).send("Art bought successfully");
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+module.exports={addFollower,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists,getReceipts,buyArt};

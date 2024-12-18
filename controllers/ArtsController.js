@@ -40,7 +40,7 @@ const getArts = async (req,res)=>{
     if(logged=="true"){
       const allArts=await arts.getArtsNew();
       for(i in allArts){
-        const user=await users.getUserById(allArts[i].theartistid);
+        const user=await users.getArtistById(allArts[i].theartistid);
         const commentsOnArt=await comments.getCommentsOnArt(allArts[i].artid);
         allArts[i].artistName=user.username;
         allArts[i].artistPic=user.profilepic;
