@@ -1,5 +1,5 @@
 const Ajv=require("ajv");
-ajv=new Ajv();
+const ajv=new Ajv();
 const schema={
     type:"object",
     properties:{

@@ -22,6 +22,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use("/helloWorld",(req,res)=>{
+    console.log("Had Req Hello World");
     res.send("Hello World");
 });
 app.use("/artist",artist);

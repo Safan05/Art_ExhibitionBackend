@@ -3,18 +3,20 @@ const GenToken = require("../util/AuthorizationToken");
 const bcrypt = require("bcrypt");
 const login=async (req,res)=>{
     try{
+        console.log("logging...");
         res.clearCookie("Role");
         res.clearCookie("x-auth-token");
         res.clearCookie("Logged");
         res.clearCookie("name");
         let user=await users.getUserByusername(req.body.username);
+        console.log("logging !!!");
         if(!user)
             return res.status(300).send("Invalid username");
         let validpass=await bcrypt.compare(req.body.password,user.password);
         if(!validpass)
             return res.status(300).send("Invalid password");
         if(user.status!="available")
-            return res.status(300).send("Account is not banned");
+            return res.status(300).send("Account is banned");
         const token=GenToken(user);
         res.cookie("Role",user.role,{httpOnly:false,secure: false,  expires:null});
         res.cookie("Logged","true",{httpOnly:false,secure: false,  expires:null});
