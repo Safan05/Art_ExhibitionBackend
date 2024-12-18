@@ -1,10 +1,4 @@
 const db = require('./db.js');
-try {
-db.connect();
-}
-catch (error) {
-console.error('Error connecting to the database:', error);
-}
 
 class UserModel {
     constructor(db) {
@@ -47,7 +41,9 @@ class UserModel {
     async getUserByusername(Username) {
       try {
         const query = 'SELECT * FROM users WHERE username= $1';
+        console.log("Database connection:", this.db);
         const result = await this.db.query(query, [Username]);
+        console.log("logging !!!");
         return result.rows[0];
       } catch (error) {
         console.error('Error fetching user :', error);

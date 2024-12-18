@@ -12,7 +12,7 @@ const upload = multer({
     const fileTypes = /jpeg|jpg|png|gif/;
     const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimeType = fileTypes.test(file.mimetype);
-
+    console.log("image uploading");
     if (extName && mimeType) {
       return cb(null, true);
     } else {
