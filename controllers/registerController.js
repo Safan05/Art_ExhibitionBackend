@@ -95,6 +95,22 @@ const updateProfilepic= async (req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
+
+const updateTheUserInfo = async(req , res)=> {
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const payload=jwt.verify(token,"OurjwtSecret");
+    const id=payload._id;
+    try{
+     const result = await users.updateuser(id , req.body.email , req.body.address , req.body.phonenumber , req.body.cardnumber , req.body.cardexpiredate);
+    console.log(result)
+    res.status(200).send("user info updated successfuly");
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send("Internal error sorry!");
+    }
+}
 const logout =(req,res)=>{
     console.log("logging out...");
     res.clearCookie("Role");
@@ -103,4 +119,4 @@ const logout =(req,res)=>{
     res.clearCookie("name");
     res.status(200).send("Logged out successfully");
 }
-module.exports={register,updatePassword,updateProfilepic,logout};
+module.exports={register,updatePassword,updateProfilepic,logout , updateTheUserInfo};

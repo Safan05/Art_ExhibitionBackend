@@ -22,7 +22,7 @@ class RecieptModel{
             return result.rows[0];
         }
         catch(err){
-            console.error("Error adding new reciept", err.message);
+            console.error("Error adding new reciept", err);
             throw err;
         }
     }

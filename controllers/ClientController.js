@@ -4,6 +4,8 @@ const wishlist = require('../Models/wishlistQueries');
 const getId=require('../util/getUserId');
 const artists=require('../Models/userqueries');
 const reciepts=require('../Models/reciept');
+const getUserId = require('../util/getUserId');
+const userqueries = require('../Models/userqueries');
 const addFollower=async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
@@ -116,8 +118,32 @@ const getReceipts = async(req,res)=>{
     const token=cookies["x-auth-token"];
     const id=getId(token);
     try{
+        let Receipts=[];
+        let newReceipt={};
         const result=await reciepts.getRecieptByClient(id);
-        res.status(200).send(result);
+       // console.log(result)
+
+       for (const Receipt of result) {
+        const newReceipt = { ...Receipt }; // Create a copy of the receipt
+        console.log(newReceipt);
+      
+        const theart = await arts.getArtById(Receipt.artid);
+        newReceipt.artdescription = theart.description;
+        newReceipt.artname = theart.artname;
+        newReceipt.artpic = theart.photo;
+      
+        const theartist = await artists.getArtistById(Receipt.artistid);
+        newReceipt.artistname = theartist.name;
+      
+        const theBuyer = await userqueries.getArtistById(Receipt.buyerid);
+        newReceipt.buyerName = theBuyer.name;
+        newReceipt.cardNumber = theBuyer.cardnumber;
+      
+        Receipts.push(newReceipt);
+      }
+      
+      console.log(Receipts); // Now Receipts will contain all the updated data
+      res.status(200).send(Receipts);
     }
     catch(err){
         res.status(500).send("Internal error sorry !");
@@ -143,7 +169,7 @@ const buyArt = async (req,res)=>{
         const d= new Date();
         const maxid= await reciepts.getMaxId();
         const recieptid= maxid+1;
-        await reciepts.addReciept(recieptid,id,artist.userid,req.body.description,req.body.artId,art.price);
+        await reciepts.addReciept(recieptid , id  ,req.body.description ,artist.userid, req.body.artId , art.baseprice );
         res.status(200).send("Art bought successfully");
     }
     catch(err){
