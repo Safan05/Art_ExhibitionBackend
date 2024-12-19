@@ -171,6 +171,32 @@ class UserModel {
         throw err;
       }
     }
+    
+    async updateuser  (userid ,email, address , phonenumber, cardnumber , cardexpiredate) {
+      try {
+        const query = `
+          UPDATE users
+          SET email = $2,
+              address = $3,
+              phonenumber = $4,
+              cardnumber = $5,
+              expiredate = $6
+              WHERE userid = $1
+              RETURNING *;
+          `;
+          const values = [userid, email , address, phonenumber, cardnumber , cardexpiredate ];
+          const result = await this.db.query(query, values);
+          console.log(result)
+          return result.rows[0];
+          
+        } catch (error) {
+          console.error('Error updating user:', error);
+          throw error;
+        }
+      
+      
+    }
+
 
 
     async  getUserIdByUsername(username) {

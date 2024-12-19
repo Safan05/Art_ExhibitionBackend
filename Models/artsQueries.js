@@ -115,6 +115,24 @@ class ArtsModel {
       }
     }
 
+    async UpdateArt(artID, artname, baseprice, description) {
+      try {
+        console.log('Updating art');
+        const query = `
+          UPDATE arts
+          SET artname = $1, baseprice = $2, description = $3
+          WHERE artid = $4
+          RETURNING *`;
+        
+        const values = [artname, baseprice, description, artID];
+        const result = await this.db.query(query, values);
+        
+        return result.rows[0];
+      } catch (err) {
+        console.error("Error updating art", err.message);
+      }
+    }
+
   }
   
   module.exports =new ArtsModel(db); // Export an instance of the class

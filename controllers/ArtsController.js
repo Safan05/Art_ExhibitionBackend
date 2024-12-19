@@ -40,18 +40,10 @@ const getArts = async (req,res)=>{
     if(logged=="true"){
       const allArts=await arts.getArtsNew();
       for(i in allArts){
-        const user=await users.getArtistById(allArts[i].theartistid);
-        const commentsOnArt=await comments.getCommentsOnArt(allArts[i].artid);
+        const user=await users.getUserById(allArts[i].theartistid);
         allArts[i].artistName=user.username;
         allArts[i].artistPic=user.profilepic;
-        allArts[i].comments=commentsOnArt;
-        for(j in commentsOnArt){
-        const client=await users.getArtistById(commentsOnArt[j].clientid);
-        if(client){
-          allArts[i].comments[j].clientprofilepic=client.profilepic;
-          allArts[i].comments[j].clientname=client.name;
-        }
-      }
+        
     }
       res.send(allArts);
     }
@@ -60,17 +52,10 @@ const getArts = async (req,res)=>{
       const allArts=await arts.getArtsLimit();
       for(i in allArts){
         const user=await users.getUserById(allArts[i].theartistid);
-        const commentsOnArt=await comments.getCommentsOnArt(allArts[i].artid);
+       
         allArts[i].artistName=user.username;
         allArts[i].artistPic=user.profilepic;
-        allArts[i].comments=commentsOnArt;
-        for(j in commentsOnArt){
-          const client=await users.getArtistById(commentsOnArt[j].clientid);
-          if(client){
-            allArts[i].comments[j].clientprofilepic=client.profilepic;
-            allArts[i].comments[j].clientname=client.name;
-          }
-        }
+       
       }
       res.send(allArts);
     }
@@ -78,6 +63,33 @@ const getArts = async (req,res)=>{
     catch(err){
         res.status(500).send("Internal error sorry !"+err.message);
     }
+}
+
+const getCommentspost = async(req , res) =>{
+
+  try {
+
+    const commentsOnArt=await comments.getCommentsOnArt(req.query.artid);
+    let theComments = [];
+    let newComment = {};
+    for(j in commentsOnArt){
+      const client=await users.getArtistById(commentsOnArt[j].clientid);
+      newComment = commentsOnArt[j];
+      if(client){
+        newComment.clientprofilepic=client.profilepic;
+        newComment.clientname=client.name;
+      }
+     
+      theComments.push(newComment);
+    }
+    res.send(theComments);
+
+  }
+   catch(err) {
+    res.status(500).send("error in fetching comments...try again later");
+   }
+   
+
 }
 
 const reviewArt = async (req,res)=>{
@@ -106,4 +118,4 @@ const deleteReview = async(req,res)=>{
 
    
 
-module.exports={addArt,getArts,reviewArt,deleteReview};
+module.exports={addArt,getArts,reviewArt,deleteReview , getCommentspost};
