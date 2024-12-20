@@ -7,4 +7,5 @@ router.get('/',artsController.getArts); // done front
 router.get('/preview',artsController.getArtsPrev); // done front
 router.post('/review',artsController.reviewArt);  //done
 router.get('/comments' , artsController.getCommentspost)  //done 
+router.put('/edit' , artsController.updateart) // done 
 module.exports=router;
