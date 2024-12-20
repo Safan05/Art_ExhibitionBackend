@@ -1,12 +1,5 @@
 const db = require('./db.js');
 
-try {
-db.connect();
-}
-catch (error) {
-console.error('Error connecting to the database:', error);
-}
-
 class AuctionModel {
     constructor(db) {
       this.db = db;
@@ -202,18 +195,27 @@ class AuctionModel {
         try {
             const query = `
                 SELECT * FROM auction
-                WHERE status === 'pending'
-                RETURNING *;
+                WHERE status = 'pending'
             `;
             
             const result = await this.db.query(query);
             return result.rows;
         } catch (err) {
-            console.error("Error deleting Auction", err.message);
-            throw err;}
+            console.error("Error getting Auction", err.message);
+            throw err;
+          }
       }
    
-    
+    async getAuctionsCount() {
+      try {
+        const query = `SELECT COUNT(*) FROM auction WHERE status = 'approved';`;
+        const result = await this.db.query(query);
+        return result.rows[0].count;
+      } catch (err) {
+        console.error("Error fetching auctions count:", err.message);
+        throw err;
+      }
+    }
 };
 
   module.exports =new AuctionModel(db); // Export an instance of the class

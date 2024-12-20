@@ -40,10 +40,9 @@ const getArts = async (req,res)=>{
     if(logged=="true"){
       const allArts=await arts.getArtsNew();
       for(i in allArts){
-        const user=await users.getUserById(allArts[i].theartistid);
-        allArts[i].artistName=user.username;
-        allArts[i].artistPic=user.profilepic;
-        
+        const user=await users.getArtistById(allArts[i].theartistid);
+        allArts[i].artistName=user.name;
+        allArts[i].artistPic=user.profilepic;    
     }
       res.send(allArts);
     }
@@ -51,9 +50,9 @@ const getArts = async (req,res)=>{
     {
       const allArts=await arts.getArtsLimit();
       for(i in allArts){
-        const user=await users.getUserById(allArts[i].theartistid);
+        const user=await users.getArtistById(allArts[i].theartistid);
        
-        allArts[i].artistName=user.username;
+        allArts[i].artistName=user.name;
         allArts[i].artistPic=user.profilepic;
        
       }
@@ -64,7 +63,22 @@ const getArts = async (req,res)=>{
         res.status(500).send("Internal error sorry !"+err.message);
     }
 }
-
+const getArtsPrev = async (req,res)=>{
+  try{
+    const allArts=await arts.getArtsLimit();
+    for(i in allArts){
+      const user=await users.getUserById(allArts[i].theartistid);
+     
+      allArts[i].artistName=user.name;
+      allArts[i].artistPic=user.profilepic;
+     
+    }
+    res.send(allArts);
+  }
+  catch(err){
+      res.status(500).send("Internal error sorry !"+err.message);
+  }
+}
 const getCommentspost = async(req , res) =>{
 
   try {
@@ -118,4 +132,4 @@ const deleteReview = async(req,res)=>{
 
    
 
-module.exports={addArt,getArts,reviewArt,deleteReview , getCommentspost};
+module.exports={addArt,getArts,reviewArt,deleteReview , getCommentspost,getArtsPrev};

@@ -3,7 +3,6 @@ module.exports=(req,res,nxt)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
     const payload=jwt.verify(token,"OurjwtSecret");
-    console.log(payload);
     if(payload.Rule=="Admin")
         nxt();
     else

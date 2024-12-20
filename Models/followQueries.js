@@ -1,10 +1,4 @@
 const db = require('./db.js');
-try {
-db.connect();
-}
-catch (error) {
-console.error('Error connecting to the database:', error);
-}
 
 class FollowModel {
     constructor(db) {
@@ -75,13 +69,13 @@ class FollowModel {
       async getArtistFollowers(artistID) {
         try {
           const query = `
-            SELECT clientid
-            FROM following
-            WHERE artistid = $1;
+            SELECT clientid, name, email
+            FROM following,users
+            WHERE artistid = $1 AND clientid = userid;
           `;
           const values = [artistID];
           const result = await this.db.query(query, values);
-          return result.rows.map(row => row.clientid); // Return an array of client IDs
+          return result.rows; // Return an array of client objects
         } catch (err) {
           console.error('Error fetching artist followers:', err.message);
           throw err;

@@ -1,11 +1,6 @@
 const db = require('./db.js');
 const users = require('./userqueries.js')
-try {
-db.connect();
-}
-catch (error) {
-console.error('Error connecting to the database:', error);
-}
+
 
 class BanModel {
     constructor(db) {

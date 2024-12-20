@@ -233,8 +233,39 @@ class UserModel {
       throw error;
     }
   }
-   
-    
+   async MakeAdmin(username){
+    try {
+      const query = 'UPDATE users SET role=$1 WHERE username=$2';
+      const values = ['Admin',username];
+      const result = await this.db.query(query,values);
+      return result.rows;
+    } catch (error) {
+      console.error('Error fetching user :', error);
+      throw error;
+    }
+  }
+  async RemoveAdmin(username){
+    try {
+      const query = 'UPDATE users SET role=$1 WHERE username=$2';
+      const values = ['Client',username];
+      const result = await this.db.query(query,values);
+      return result.rows;
+    } catch (error) {
+      console.error('Error fetching user :', error);
+      throw error;
+    }
+  }
+    async getUsersCount(){
+    try {
+      const query = 'SELECT COUNT(*) FROM users WHERE status=$1';
+      const values = ['available'];
+      const result = await this.db.query(query,values);
+      return result.rows[0].count;
+    } catch (error) {
+      console.error('Error fetching user :', error);
+      throw error;
+    }
+    }
   }
   
   module.exports =new UserModel(db); // Export an instance of the class

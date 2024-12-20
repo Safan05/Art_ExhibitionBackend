@@ -3,7 +3,8 @@ const arts = require("../Models/artsQueries")
 const getId=require("../util/getUserId")
 const auction=require("../Models/AuctionQueries");
 const comments = require("../Models/comments");
-
+const follows = require("../Models/followQueries");
+const exh=require("../Models/ExhibitionQueries");
 const getArtistArt = async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
@@ -25,7 +26,19 @@ const getArtistArt = async (req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
-
+const getFollowers = async (req,res)=>{
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const id=getId(token);
+    try{
+    const allFollowers=await follows.getArtistFollowers(id);
+    console.log(allFollowers);
+    res.send(allFollowers);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
 const getArtistArtpreview = async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
@@ -67,4 +80,25 @@ const addArtToAuction = async(req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={getArtistArt,addArtToAuction,getArtistArtpreview};
+const deleteArt= async(req,res)=>{
+    try{
+        const art=await arts.getArtById(req.body.artId);
+        if(!art)
+        {
+            res.status(404).send("Art not found");
+            return;
+        }
+        const art2=await exh.findArtInExhibition(req.body.artId);
+        if(art2)
+        {
+            res.status(400).send("Art in an exhibition can't be deleted");
+            return;
+        }
+        await arts.deleteArt(req.body.artId);
+        res.status(200).send("Art deleted successfully");
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+module.exports={getArtistArt,addArtToAuction,getArtistArtpreview,getFollowers,deleteArt};

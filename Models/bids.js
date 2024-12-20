@@ -1,10 +1,5 @@
 const db = require('./db.js');
-try {
-db.connect();
-}
-catch (error) {
-console.error('Error connecting to the database:', error);
-}
+
 class BidsModel{
     constructor(db) {
         this.db = db; // Use the pool instance from `pg`
