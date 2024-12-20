@@ -54,7 +54,9 @@ const deleteFeedback=async(req,res)=>{
 }
 const getFeedback=async(req,res)=>{
     try{
+        console.log("here");
         const feedback=await feedbackQueries.getFeedbacks();
+        console.log(feedback);
         res.send(feedback);
     }
     catch(err){

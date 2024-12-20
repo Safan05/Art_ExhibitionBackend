@@ -1,11 +1,6 @@
 const db = require('./db.js');
 const arts = require('./artsQueries.js')
-try {
-db.connect();
-}
-catch (error) {
-console.error('Error connecting to the database:', error);
-}
+
 
 class ExhibitionModel {
     constructor(db) {
@@ -29,15 +24,14 @@ class ExhibitionModel {
       
       try{
         const query = `
-       INSERT INTO exhibition (exhibitionid ,title , theme, starttime , endtime )
+       INSERT INTO exhibition (exhibitionid ,title , theme, startdate , enddate )
        values($1 , $2 , $3 ,$4 , $5)
        RETURNING *;
        `;
         const values = [exhibitionID ,title , theme , startTime , endTime ];
+        console.log(values);
         const result = await this.db.query(query , values);
-        CurrentID++;
         return result.rows[0];
-    
       }
     
      catch(err){
@@ -87,9 +81,8 @@ class ExhibitionModel {
       
           const currentTime = new Date();
           const availableExhibition = result.rows.filter(exhibition => {
-            const startTime = new Date(exhibition.starttime);
-            const endTime = new Date(exhibition.endtime);
-      
+            const startTime = new Date(exhibition.startdate);
+            const endTime = new Date(exhibition.enddate);
             return currentTime >= startTime && currentTime <= endTime;
           });
       
@@ -130,14 +123,9 @@ async addArtToExhibition(artID , ExhibitionID){
     INSERT INTO exhibitionarts (artid , exhibitionid)
     VALUES ($1 , $2)
     RETURNING *
-
   `;
   const values = [artID,ExhibitionID];
-
-  
   const result = await this.db.query(query, values);
-
- 
   return result.rows[0];
 } catch (err) {
   console.error('Error adding art to exhibition', err.message);
@@ -164,6 +152,29 @@ async RemoveArtFromExhibition(artID , ExhibitionID){
   throw err;
 }
 }
+async getExhibitionById(exhibitionID){
+  try{
+      const query = 'SELECT * FROM exhibition WHERE exhibitionid = $1';
+      const values = [exhibitionID];
+      const result = await this.db.query(query , values);
+      return result.rows[0];
+  }
+  catch(err){
+      console.log(err);
+      throw err;
+  }
+}
+async findArtInExhibition(artID){
+  try{
+    const query = 'SELECT * FROM exhibitionarts WHERE artid = $1';
+    const values = [artID];
+    const result = await this.db.query(query , values);
+    return result.rows[0];
+  }
+  catch(err){
+    console.log(err);
+    throw err;
+  }
 };
-
+}
   module.exports =new ExhibitionModel(db); // Export an instance of the class

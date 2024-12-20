@@ -1,13 +1,5 @@
 const db = require('./db.js');
 const users = require("./userqueries.js");
-try {
-db.connect();
-}
-catch (error) {
-console.error('Error connecting to the database:', error);
-}
-
-
 class ArtsModel {
     constructor(db) {
       this.db = db; // Use the pool instance from `pg`
@@ -36,7 +28,7 @@ class ArtsModel {
     // getting all the arts from an artist
     async getArtsbyArtist(artistId) {
       try {
-        const query = 'SELECT * FROM arts WHERE theartistid= $1';
+        const query = `SELECT * FROM arts WHERE theartistid= $1 AND status='available'`;
         const result = await this.db.query(query, [artistId]);
         return result.rows;
       } catch (error) {
@@ -132,7 +124,28 @@ class ArtsModel {
         console.error("Error updating art", err.message);
       }
     }
-
+async getArtsCount(){
+  try{
+    const query = 'SELECT COUNT(*) FROM arts WHERE status = $1';
+    const result = await this.db.query(query , ['available']);
+    return result.rows[0].count;
+  }
+  catch(err){
+    console.log(err);
+    throw err;
+  }
+}
+async deleteArt(artID){
+  try{
+    const query = 'DELETE FROM arts WHERE artid = $1';
+    const result = await this.db.query(query , [artID]);
+    return result.rows;
+  }
+  catch(err){
+    console.error('Error deleting the art:', err.message);
+    throw err;
+  }
+}
   }
   
   module.exports =new ArtsModel(db); // Export an instance of the class

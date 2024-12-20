@@ -5,6 +5,7 @@ const feedbacks=require("../Models/feedbackQueries");
 const bans=require("../Models/bans");
 const exhibitions=require("../Models/ExhibitionQueries");
 const auctions=require("../Models/AuctionQueries");
+const reciept = require("../Models/reciept");
 
 const BanUser=async (req,res)=>{
     const cookies=req.cookies;
@@ -26,7 +27,7 @@ const getUsers=async (req,res)=>{
         res.send(allUsers);
     }
     catch(err){
-        res.status(300).send("Internal error sorry !");
+        res.status(500).send("Internal error sorry !");
     }
 }
 const getBannedUsers=async (req,res)=>{
@@ -103,13 +104,11 @@ const getBannedArts=async(req,res)=>{
     }
 }
 const startExhibition=async(req,res)=>{
-    const cookies=req.cookies;
-    const token=cookies["x-auth-token"];
-    const id=getId(token);
     try{
         const new_id=await exhibitions.getMaxId();
         let num=new_id?parseInt(new_id):7600;
-        await exhibitions.StartExhibition(num+1,id,req.body.title,req.body.theme,req.body.startdate,req.body.enddate);
+        console.log(req.body)
+        await exhibitions.StartExhibition(num+1,req.body.title,req.body.theme,req.body.startDate,req.body.endDate);
         res.status(200).send("Exhibition started successfully");
     }
     catch(err){
@@ -137,6 +136,14 @@ const endExhibition=async(req,res)=>{
 const getExhibitions=async(req,res)=>{
     try{
         const allExhibitions=await exhibitions.DisplayExhibition();
+        for(i in allExhibitions){
+            const arts=await exhibitions.GetArtsInExhibition(allExhibitions[i].exhibitionid);
+            allExhibitions[i].artworks=arts;
+            for(j in arts){
+                const artist=await users.getArtistById(arts[j].theartistid);
+                arts[j].artistName=artist.name;
+            }
+        }
         res.send(allExhibitions);
     }
     catch(err){
@@ -268,6 +275,7 @@ const MakeAdmin=async(req,res)=>{
             res.status(404).send("User not found");
             return;
         }
+        console.log("Making admin...");
         await users.MakeAdmin(req.body.username);
         res.status(200).send("User is now an admin");
     }
@@ -283,8 +291,69 @@ const RemoveAdmin=async(req,res)=>{
             res.status(404).send("User not found");
             return;
         }
+        console.log("Removing admin...");
         await users.RemoveAdmin(req.body.username);
         res.status(200).send("User is no longer an admin");
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+const getStatistics=async(req,res)=>{
+    try{
+        const allUsers=await users.getUsersCount();
+        const allArts=await arts.getArtsCount();
+        const allAuctions=await auctions.getAuctionsCount();
+        const sales=await reciept.getTotalSalesThisMonth();
+        const statistics={totalUsers:allUsers,totalArtworks:allArts,activeAuctions:allAuctions,salesThisMonth:sales};
+        res.send(statistics);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+const getActivity=async(req,res)=>{
+    try{
+        const Activity=await reciept.getRecieptsCountForThisYear();
+        const monthlyActivity={};
+        for(i in Activity){
+            let month="january";
+            if(Activity[i].month==2)
+                month="february";
+            else if(Activity[i].month==3)
+                month="march";
+            else if(Activity[i].month==4)
+                month="april";
+            else if(Activity[i].month==5)
+                month="may";
+            else if(Activity[i].month==6)
+                month="june";
+            else if(Activity[i].month==7)
+                month="july";
+            else if(Activity[i].month==8)
+                month="august";
+            else if(Activity[i].month==9)
+                month="september";
+            else if(Activity[i].month==10)
+                month="october";
+            else if(Activity[i].month==11)
+                month="november";
+            else if(Activity[i].month==12){
+                month="december";
+            }
+
+            monthlyActivity[month]=Activity[i].count;
+        }
+        res.send(monthlyActivity);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+const getAuctionRequests=async(req,res)=>{
+    try{
+        const allAuctions=await auctions.GetAuctionRequests();
+        res.send(allAuctions);
     }
     catch(err){
         res.status(500).send("Internal error sorry !");
@@ -308,5 +377,8 @@ module.exports={BanUser,
     rejectAuction,
     deleteAuction,
     MakeAdmin,
-    RemoveAdmin
+    RemoveAdmin,
+    getStatistics,
+    getActivity,
+    getAuctionRequests
 };

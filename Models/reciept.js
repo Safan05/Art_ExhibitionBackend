@@ -1,10 +1,5 @@
 const db = require('./db.js');
-try {
-db.connect();
-}
-catch (error) {
-console.error('Error connecting to the database:', error);
-}
+
 class RecieptModel{
     constructor(db) {
         this.db = db; // Use the pool instance from `pg`
@@ -77,6 +72,38 @@ class RecieptModel{
             return result.rows;
         }
         catch(err){
+            console.error("Error loading reciept", err.message);
+            throw err;
+        }
+    }
+    async getTotalSalesThisMonth(){
+        try{
+            const query = `
+            SELECT SUM(price) FROM reciept
+            WHERE EXTRACT(MONTH FROM recieptdate) = EXTRACT(MONTH FROM CURRENT_DATE)
+            AND EXTRACT(YEAR FROM recieptdate) = EXTRACT(YEAR FROM CURRENT_DATE)
+            ;
+            `;
+            const result = await this.db.query(query);
+            return result.rows[0].sum;
+        }
+        catch(err){
+            console.error("Error loading reciept", err.message);
+            throw err;
+        }
+    }
+    async getRecieptsCountForThisYear() {
+        try {
+            const query = `
+                SELECT EXTRACT(MONTH FROM recieptdate) AS month, COUNT(*) AS count
+                FROM reciept
+                WHERE EXTRACT(YEAR FROM recieptdate) = EXTRACT(YEAR FROM CURRENT_DATE)
+                GROUP BY EXTRACT(MONTH FROM recieptdate)
+                ORDER BY month;
+            `;
+            const result = await this.db.query(query);
+            return result.rows;
+        } catch (err) {
             console.error("Error loading reciept", err.message);
             throw err;
         }
