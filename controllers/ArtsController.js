@@ -116,6 +116,16 @@ const deleteReview = async(req,res)=>{
     }
   }
 
+  const updateart = async(req , res) => {
+    try {
+      const result = await arts.UpdateArt(req.body.artid ,req.body.artname , req.body.baseprice , req.body.description );
+      res.status(200).send(result);
+
+    }
+    catch(err){
+      res.status(500).send("Internal error sorry !")
+    }
+  }
    
 
-module.exports={addArt,getArts,reviewArt,deleteReview , getCommentspost};
+module.exports={addArt,getArts,reviewArt,deleteReview , getCommentspost , updateart};
