@@ -222,6 +222,15 @@ const getAuctions=async(req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
+const getAuctionsLimit=async(req,res)=>{
+    try{
+        const result=await auctions.DisplayAuctionsLimit();
+        res.status(200).send(result);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
 const addBid=async(req,res)=>{
     if(req.body.bid<req.body.baseprice)
     {
@@ -258,4 +267,4 @@ const getWonAuctions= async (req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={addFollower,getWonAuctions,buyArtAuction,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists,getReceipts,buyArt,getAuctions,addBid};
+module.exports={addFollower,getAuctionsLimit,getWonAuctions,buyArtAuction,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists,getReceipts,buyArt,getAuctions,addBid};

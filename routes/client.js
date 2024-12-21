@@ -11,6 +11,7 @@ router.post('/removeFollower',clientController.deleteFollower); // done front
 router.get('/getFollowings',clientController.getFollowings); // done front
 router.post('/addWishlist',clientController.addToWishlist); // done front
 router.get('/auctions',clientController.getAuctions); // done front
+router.get('/auctions/limit',clientController.getAuctionsLimit); // done front
 router.delete('/RemoveWishlist',clientController.RemoveFromWishlst); // done front
 router.get('/getWishlist',clientController.getWishlist); //done front
 router.get('/getArtists',clientController.getArtists);  // done front

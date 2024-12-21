@@ -204,7 +204,29 @@ class AuctionModel {
             throw err;
           }
       }
-   
+   async DisplayAuctionsLimit(){
+    try {
+      const query = `SELECT u.name, u.profilepic , ar.photo , ar.artname , ar.description, au.auctionid , 
+      au.startingbid, au.highestbid, au.starttime , au.endtime , au.status
+      FROM users AS u , arts AS ar , auction AS au
+      Where u.userid = ar.theartistid AND ar.artid = au.artid LIMIT 3`;
+      const result = await this.db.query(query);
+  
+      const currentTime = new Date();
+      const availableAuctions = result.rows.filter(auction => {
+        const startTime = new Date(auction.starttime);
+        const endTime = new Date(auction.endtime);
+  
+        return currentTime >= startTime && currentTime <= endTime && auction.status ==="approved";
+      });
+  
+      return availableAuctions;
+
+    } catch (err) {
+      console.error("Error fetching auctions:", err.message);
+      throw err;
+    }
+  }
     async getAuctionsCount() {
       try {
         const query = `SELECT COUNT(*) FROM auction WHERE status = 'approved';`;
@@ -215,6 +237,7 @@ class AuctionModel {
         throw err;
       }
     }
+
     async getWinnerAuction(auctionID) {
       try {
         console.log(auctionID);

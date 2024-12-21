@@ -61,7 +61,7 @@ class FeedBackModel{
     }
     async getFeedbacks(){
         try{
-            const query = 'SELECT * FROM feedback';
+            const query = 'SELECT name,role,description FROM feedback,users WHERE submitterid=userid LIMIT 3';
             const result = await this.db.query(query);
             return result.rows;
         }

@@ -4,7 +4,7 @@ const feedbackQueries=require('../Models/feedbackQueries');
 const adminController=require('../controllers/AdminController');
 router.get('/Feedback',async (req,res)=>{
     try{
-    const result=await feedbackQueries.getFeedback(req,res);
+    const result=await feedbackQueries.getFeedbacks(req,res);
     res.send(result);
     }
     catch(err){

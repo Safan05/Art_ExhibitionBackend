@@ -16,8 +16,8 @@ router.post('/exhibition',adminController.startExhibition); // done front
 router.post('/Endexhibition',adminController.endExhibition); // done front
 router.put('/exhibition',adminController.updateExhibition); // done front
 router.post('/exhibition/arts',adminController.addArtToExhibition); // done front
-router.post('/exhibition/Remarts',adminController.removeArtFromExhibition);
-router.put('/auction/approve',adminController.approveAuction);
+router.post('/exhibition/Remarts',adminController.removeArtFromExhibition); // done front
+router.put('/auction/approve',adminController.approveAuction); // done front
 router.put('/auction/reject',adminController.rejectAuction);
 router.post('/auction',adminController.deleteAuction);
 router.post('/MakeAdmin',adminController.MakeAdmin);    // done front
