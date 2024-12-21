@@ -17,5 +17,7 @@ router.get('/getArtists',clientController.getArtists);  // done front
 router.post("/arts", Controller.getArtistArtpreview); // done front
 router.get("/Receipts",clientController.getReceipts); // done front
 router.post("/buy",clientController.buyArt);  //done 
+router.post("/buy/auction",clientController.buyArtAuction); // done front
 router.post("/add/bid",clientController.addBid); // done front
+router.get("/wonAuctions",clientController.getWonAuctions); // done front
 module.exports = router;

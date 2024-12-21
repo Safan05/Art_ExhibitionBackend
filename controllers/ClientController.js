@@ -179,32 +179,47 @@ const buyArt = async (req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
-const getAuctions=async(req,res)=>{
+const buyArtAuction=async(req,res)=>{
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const id=getId(token);
     try{
-        const result=await auctions.DisplayAuctions();
-        for(i in result){
-            const winner=await auctions.getWinnerAuction(result[i].auctionid);
-            console.log(winner);
-            result[i].winner=winner;
+        const art=await arts.getArtById(req.body.artId);
+        if(!art)
+        {
+            res.status(404).send("Art not found");
+            return;
         }
-        res.status(200).send(result);
+        const artist=await artists.getArtistById(art.theartistid);
+        if(!artist)
+        {
+            res.status(404).send("Artist not found");
+            return;
+        }
+        const d= new Date();
+        const maxid= await reciepts.getMaxId();
+        const recieptid= maxid+1;
+        await reciepts.addReciept(recieptid , id  ,req.body.description ,artist.userid, req.body.artId , req.body.price );
+        res.status(200).send("Art bought successfully");
     }
     catch(err){
         res.status(500).send("Internal error sorry !");
     }
 }
-const getAuctinosSocket=async(socket)=>{
+const getAuctions=async(req,res)=>{
     try{
         const result=await auctions.DisplayAuctions();
         for(i in result){
+            if(result[i].highestbid>0){
             const winner=await auctions.getWinnerAuction(result[i].auctionid);
             console.log(winner);
             result[i].winner=winner;
+            }
         }
-        socket.emit('auctions', result);
-    } catch (error) {
-        console.error('Error fetching auctions', error);
-        socket.emit('error', 'Error fetching auctions');
+        res.status(200).send(result);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
     }
 }
 const addBid=async(req,res)=>{
@@ -231,4 +246,16 @@ const addBid=async(req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={addFollower,getAuctinosSocket,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists,getReceipts,buyArt,getAuctions,addBid};
+const getWonAuctions= async (req,res)=>{
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const id=getId(token);
+    try{
+        const result=await auctions.getWonAuctions(id);
+        res.status(200).send(result);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+module.exports={addFollower,getWonAuctions,buyArtAuction,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists,getReceipts,buyArt,getAuctions,addBid};

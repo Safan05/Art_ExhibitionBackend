@@ -190,7 +190,7 @@ class AuctionModel {
       async GetAuctionRequests() {
         try {
             const query = `
-                SELECT auctionid,baseprice,starttime,endtime,artname,photo,name FROM auction,arts,users
+                SELECT auctionid,startingbid,starttime,endtime,artname,photo,name FROM auction,arts,users
                 WHERE auction.status = 'pending' and auction.artid = arts.artid and arts.theartistid = users.userid;
             `;
             
@@ -227,6 +227,28 @@ class AuctionModel {
         return result.rows[0].name;
       } catch (err) {
         console.error("Error fetching winner auction:", err.message);
+        throw err;
+      }
+    }
+    async getWonAuctions(clientID) {
+      try {
+        const query = `
+          SELECT auctionid, artid, starttime, endtime, startingbid, highestbid
+          FROM auction
+          WHERE auctionid IN (
+            SELECT auctionid
+            FROM bids
+            WHERE biddingclient = $1
+            ORDER BY amount DESC
+            LIMIT 1
+          ); 
+          and endtime < now() ;
+        `;
+        const values = [clientID];
+        const result = await this.db.query(query, values);
+        return result.rows;
+      } catch (err) {
+        console.error("Error fetching won auctions:", err.message);
         throw err;
       }
     }

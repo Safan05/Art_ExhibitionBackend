@@ -3,7 +3,7 @@ const ajv=new Ajv();
 const schema={
     type:"object",
     properties:{
-        name:{type:"string",pattern:"^[A-Z][a-z]*$"},
+        name:{type:"string"},
         email:{type:"string",
               pattern: "^\\S+@\\S+\\.\\S+$",
             //  format: "email"
