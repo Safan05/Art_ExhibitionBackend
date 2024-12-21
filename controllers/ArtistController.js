@@ -107,7 +107,7 @@ const addArtToAuction = async(req,res)=>{
         res.status(200).send("Art added to auction successfully");
     }
     catch(err){
-        res.status(500).send("Internal error sorry !");
+        res.status(500).send("Internal error sorry !",err.message);
     }
 }
 const deleteArt= async(req,res)=>{

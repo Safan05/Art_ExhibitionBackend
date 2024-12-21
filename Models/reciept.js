@@ -5,14 +5,15 @@ class RecieptModel{
         this.db = db; // Use the pool instance from `pg`
       }
 
-    async addReciept(recieptid, clientid ,descrtiption,artistid, artid , amount ){
+    async addReciept(recieptid, clientid ,descrtiption,artistid, artid , amount  ){
         try{
             const query = `
              INSERT INTO reciept (recieptid, buyerid, artistid,artid,price,description,recieptdate)
-             VALUES ($1, $2, $3, $4, $5, $6, now())
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
              RETURNING *;
             `;
-            const values = [recieptid, clientid, artistid, artid, amount, descrtiption];
+            const d = new Date();
+            const values = [recieptid, clientid, artistid, artid, amount, descrtiption ,d];
             const result = await this.db.query(query , values);
             return result.rows[0];
         }
