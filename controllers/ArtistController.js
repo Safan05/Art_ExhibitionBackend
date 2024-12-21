@@ -101,13 +101,13 @@ const addArtToAuction = async(req,res)=>{
             res.status(404).send("Art not found");
             return;
         }
-        const new_id=await auction.getmaxId();
+        const new_id=await auction.getMaxId();
         let num=new_id?parseInt(new_id):43200;
         auction.RequestAuction(num+1,req.body.artId,req.body.startDate,req.body.endDate,req.body.startingPrice);
         res.status(200).send("Art added to auction successfully");
     }
     catch(err){
-        res.status(500).send("Internal error sorry !",err.message);
+        res.status(500).send("Internal error sorry !");
     }
 }
 const deleteArt= async(req,res)=>{

@@ -7,6 +7,8 @@ const reciepts=require('../Models/reciept');
 const getUserId = require('../util/getUserId');
 const userqueries = require('../Models/userqueries');
 const auctions = require('../Models/AuctionQueries');
+const bids=require('../Models/bids');
+
 const addFollower=async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
@@ -180,10 +182,53 @@ const buyArt = async (req,res)=>{
 const getAuctions=async(req,res)=>{
     try{
         const result=await auctions.DisplayAuctions();
+        for(i in result){
+            const winner=await auctions.getWinnerAuction(result[i].auctionid);
+            console.log(winner);
+            result[i].winner=winner;
+        }
         res.status(200).send(result);
     }
     catch(err){
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={addFollower,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists,getReceipts,buyArt,getAuctions};
+const getAuctinosSocket=async(socket)=>{
+    try{
+        const result=await auctions.DisplayAuctions();
+        for(i in result){
+            const winner=await auctions.getWinnerAuction(result[i].auctionid);
+            console.log(winner);
+            result[i].winner=winner;
+        }
+        socket.emit('auctions', result);
+    } catch (error) {
+        console.error('Error fetching auctions', error);
+        socket.emit('error', 'Error fetching auctions');
+    }
+}
+const addBid=async(req,res)=>{
+    if(req.body.bid<req.body.baseprice)
+    {
+        res.status(400).send("Bid should be greater than base price");
+        return;
+    }
+    if(req.body.bid<req.body.highestbid)
+    {
+        res.status(400).send("Bid should be greater than highest bid");
+        return;
+    }
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const id=getId(token);
+    console.log(req.body);
+    try{
+        const result=await bids.addBid(id, req.body.auctionId , req.body.bid,req.body.auctiondate);
+        console.log(result);
+        res.status(200).send("Bid added successfully");
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+module.exports={addFollower,getAuctinosSocket,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists,getReceipts,buyArt,getAuctions,addBid};

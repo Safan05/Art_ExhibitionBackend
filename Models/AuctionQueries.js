@@ -21,9 +21,7 @@ class AuctionModel {
     // to do --> how to get the IDs to insert them 
     async getAuctionByID(auctionID) {
       try{
-        const query=`SELECT * FROM auction WHERE auctionid = $1
-        Values($1)
-        `;
+        const query=`SELECT * FROM auction WHERE auctionid = $1`;
 
         const values=[auctionID];
         const result = await this.db.query(query,values);
@@ -44,7 +42,6 @@ class AuctionModel {
         `;
           const values = [auctionID ,artID , startTime , endDTime , startingBid ];
           const result = await this.db.query(query , values);
-          CurrentID++;
           return result.rows[0];
       
         }
@@ -59,13 +56,12 @@ class AuctionModel {
       try {
           const query = `
               UPDATE auction
-              SET starttime = $2 endtime = $3, startingbid = $4, status = 'approved'
+              SET starttime = $2, endtime = $3, startingbid = $4, status = 'approved'
               WHERE auctionid = $1
               RETURNING *;
           `;
           const values = [auctionID, startTime, endDTime, startingBid];
           const result = await this.db.query(query, values);
-          CurrentID++;
           return result.rows[0];
       } catch (err) {
           console.error("Error starting Auction", err.message);
@@ -194,8 +190,8 @@ class AuctionModel {
       async GetAuctionRequests() {
         try {
             const query = `
-                SELECT * FROM auction
-                WHERE status = 'pending'
+                SELECT auctionid,baseprice,starttime,endtime,artname,photo,name FROM auction,arts,users
+                WHERE auction.status = 'pending' and auction.artid = arts.artid and arts.theartistid = users.userid;
             `;
             
             const result = await this.db.query(query);
@@ -213,6 +209,24 @@ class AuctionModel {
         return result.rows[0].count;
       } catch (err) {
         console.error("Error fetching auctions count:", err.message);
+        throw err;
+      }
+    }
+    async getWinnerAuction(auctionID) {
+      try {
+        console.log(auctionID);
+        const query = `
+          SELECT name
+          FROM bids , users
+          WHERE auctionid = $1 and biddingclient = userid
+          ORDER BY amount DESC
+          LIMIT 1;
+        `;
+        const values = [auctionID];
+        const result = await this.db.query(query, values);
+        return result.rows[0].name;
+      } catch (err) {
+        console.error("Error fetching winner auction:", err.message);
         throw err;
       }
     }

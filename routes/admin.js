@@ -13,8 +13,8 @@ router.get('/ban/art',adminController.getBannedArts); // done front
 router.get('/req/auctions',adminController.getAuctionRequests); // done front
 router.get('/exhibition',adminController.getExhibitions); // done front
 router.post('/exhibition',adminController.startExhibition); // done front
-router.post('/Endexhibition',adminController.endExhibition);
-router.put('/exhibition',adminController.updateExhibition);
+router.post('/Endexhibition',adminController.endExhibition); // done front
+router.put('/exhibition',adminController.updateExhibition); // done front
 router.post('/exhibition/arts',adminController.addArtToExhibition); // done front
 router.post('/exhibition/Remarts',adminController.removeArtFromExhibition);
 router.put('/auction/approve',adminController.approveAuction);

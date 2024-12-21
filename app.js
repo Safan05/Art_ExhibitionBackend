@@ -10,6 +10,7 @@ const artist = require("./routes/artist");
 const uploadimg = require("./routes/imgupload");
 const user = require('./routes/users');
 const Client=require('./routes/client');
+const api=require('./routes/api');
 const cookieParser = require('cookie-parser');
 process.on("uncaughtException",(exception)=>{console.log("Exception !")});  // used to handle any sync exception that may happen
 process.on("unhandledRejection",(exception)=>{console.log("Rejection !")});  // used to handle any asyn rejection that may happen
@@ -33,5 +34,6 @@ app.use("/arts",arts);
 app.use("/upload",uploadimg);
 app.use("/client",Client);
 app.use("/user",user);
+app.use("/api",api);
 const port = process.env.port||3000;
 app.listen(port,()=>{console.log(`listening to port ${port}`)});

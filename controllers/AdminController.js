@@ -209,6 +209,7 @@ const removeArtFromExhibition=async(req,res)=>{
 }
 const getExhibitionArts=async(req,res)=>{
     try{
+        console.log(req.body);
         let exhibition=await exhibitions.getExhibitionById(req.body.exhibitionId);
         if(!exhibition)
         {
@@ -224,6 +225,7 @@ const getExhibitionArts=async(req,res)=>{
 }
 const approveAuction=async(req,res)=>{
     try{
+        console.log("Approving auction...");
         let auction=await auctions.getAuctionByID(req.body.auctionId);
         if(!auction)
         {
