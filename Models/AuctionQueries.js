@@ -119,7 +119,10 @@ class AuctionModel {
   }
     async DisplayAuctions() {
         try {
-          const query = `SELECT * FROM auction`;
+          const query = `SELECT u.name, u.profilepic , ar.photo , ar.artname , ar.description, au.auctionid , 
+          au.startingbid, au.highestbid, au.starttime , au.endtime , au.status
+          FROM users AS u , arts AS ar , auction AS au
+          Where u.userid = ar.theartistid AND ar.artid = au.artid`;
           const result = await this.db.query(query);
       
           const currentTime = new Date();
