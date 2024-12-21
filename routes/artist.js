@@ -7,4 +7,5 @@ router.get("/arts", Controller.getArtistArt); // done front
 router.post("/art/auction", Controller.addArtToAuction);
 router.post("/art/delete", Controller.deleteArt); // done front
 router.get("/followers", Controller.getFollowers); // done front
+router.get("/sold", Controller.getSoldArts); // done front
 module.exports = router;

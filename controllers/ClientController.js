@@ -6,6 +6,7 @@ const artists=require('../Models/userqueries');
 const reciepts=require('../Models/reciept');
 const getUserId = require('../util/getUserId');
 const userqueries = require('../Models/userqueries');
+const auctions = require('../Models/AuctionQueries');
 const addFollower=async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
@@ -176,4 +177,13 @@ const buyArt = async (req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={addFollower,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists,getReceipts,buyArt};
+const getAuctions=async(req,res)=>{
+    try{
+        const result=await auctions.DisplayAuctions();
+        res.status(200).send(result);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+module.exports={addFollower,deleteFollower,getFollowings,addToWishlist,RemoveFromWishlst,getWishlist,getArtists,getReceipts,buyArt,getAuctions};

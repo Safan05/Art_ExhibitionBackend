@@ -5,6 +5,7 @@ const auction=require("../Models/AuctionQueries");
 const comments = require("../Models/comments");
 const follows = require("../Models/followQueries");
 const exh=require("../Models/ExhibitionQueries");
+const reciepts=require("../Models/reciept");
 const getArtistArt = async (req,res)=>{
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
@@ -21,6 +22,35 @@ const getArtistArt = async (req,res)=>{
       }
     console.log(allArts);
     res.send(allArts);
+    }
+    catch(err){
+        res.status(500).send("Internal error sorry !");
+    }
+}
+const getSoldArts = async(req,res)=>{
+    const cookies=req.cookies;
+    const token=cookies["x-auth-token"];
+    const id=getId(token);
+    try{
+        let Receipts=[];
+        let newReceipt={};
+        const result=await reciepts.getRecieptByArtist(id);
+       // console.log(result)
+
+       for (const Receipt of result) {
+        const newReceipt = { ...Receipt }; // Create a copy of the receipt
+        const theart = await arts.getArtById(Receipt.artid);
+        newReceipt.artdescription = theart.description;
+        newReceipt.artname = theart.artname;
+        newReceipt.artpic = theart.photo;      
+        const theartist = await users.getArtistById(Receipt.artistid);
+        newReceipt.artistname = theartist.name;
+        const theBuyer = await users.getArtistById(Receipt.buyerid);
+        newReceipt.buyerName = theBuyer.name;
+        newReceipt.cardNumber = theBuyer.cardnumber;
+        Receipts.push(newReceipt);
+      }
+      res.status(200).send(Receipts);
     }
     catch(err){
         res.status(500).send("Internal error sorry !");
@@ -101,4 +131,4 @@ const deleteArt= async(req,res)=>{
         res.status(500).send("Internal error sorry !");
     }
 }
-module.exports={getArtistArt,addArtToAuction,getArtistArtpreview,getFollowers,deleteArt};
+module.exports={getArtistArt,addArtToAuction,getArtistArtpreview,getFollowers,deleteArt,getSoldArts};
