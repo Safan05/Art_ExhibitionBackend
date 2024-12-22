@@ -180,6 +180,7 @@ const buyArt = async (req,res)=>{
     }
 }
 const buyArtAuction=async(req,res)=>{
+    console.log(req.body);
     const cookies=req.cookies;
     const token=cookies["x-auth-token"];
     const id=getId(token);
@@ -261,6 +262,10 @@ const getWonAuctions= async (req,res)=>{
     const id=getId(token);
     try{
         const result=await auctions.getWonAuctions(id);
+        for(i in result){
+            const paid=await reciepts.checkPaid(id,result[i].artid);
+            result[i].paid=paid;
+        }
         res.status(200).send(result);
     }
     catch(err){

@@ -259,20 +259,24 @@ class AuctionModel {
     async getWonAuctions(clientID) {
       try {
         const query = `
-          SELECT auctionid, artid, starttime, endtime, startingbid, highestbid
-          FROM auction
-          WHERE auctionid IN (
+          SELECT auctionid, auction.artid, starttime, endtime, startingbid, highestbid,photo,artname
+          FROM auction, arts
+          WHERE auction.artid = arts.artid and auctionid IN (
             SELECT auctionid
             FROM bids
             WHERE biddingclient = $1
             ORDER BY amount DESC
-            LIMIT 1
           ); 
-          and endtime < now() ;
+          
         `;
         const values = [clientID];
         const result = await this.db.query(query, values);
-        return result.rows;
+        const filteredAuctions = result.rows.filter(auction => {
+          const currentTime = new Date();
+          const endTime = new Date(auction.endtime);
+          return currentTime.getTime() > endTime.getTime();
+        });
+        return filteredAuctions;
       } catch (err) {
         console.error("Error fetching won auctions:", err.message);
         throw err;

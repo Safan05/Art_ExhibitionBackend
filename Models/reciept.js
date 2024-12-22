@@ -108,5 +108,21 @@ class RecieptModel{
             throw err;
         }
     }
+    async checkPaid(clientid,artid){
+        try{
+            const query = `
+            SELECT * FROM reciept
+            WHERE buyerid = $1 AND artid = $2
+            ;
+            `;
+            const values = [clientid, artid];
+            const result = await this.db.query(query , values);
+            return result.rows.length > 0;
+        }
+        catch(err){
+            console.error("Error loading reciept", err.message);
+            throw err;
+        }
+    }
 }
 module.exports=new RecieptModel(db);
